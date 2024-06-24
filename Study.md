@@ -238,6 +238,20 @@ std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << st
 
 
 
+**Uniform**
+
+Uniform是另一种从我们的应用程序在 CPU 上传递数据到 GPU 上的着色器的方式。
+
+它是全局的，它在每个着色器程序对象中独一无二，而且可以被着色器程序的任意着色器在任意阶段访问。
+
+
+
+
+
+
+
+
+
 
 
 

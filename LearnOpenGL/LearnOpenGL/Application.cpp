@@ -133,6 +133,14 @@ int main()
         return -2;
     }
 
+    //Set Uniform
+    //绑定着色器
+    glUseProgram(shaderProgram);
+    float timeValue = glfwGetTime();
+    float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+    int vertexColorLocation = glGetUniformLocation(shaderProgram, "u_Color");
+    glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
     //不用EBO的VBO存储顶点数据
     //float vertices[] = 
     //{
@@ -182,21 +190,22 @@ int main()
     //解释顶点属性
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    //绑定着色器
-    glUseProgram(shaderProgram);
+    
 
     while (!glfwWindowShouldClose(window)) //渲染循环
     {
         processInput(window);
 
-        // Draw Call
+        //Clear
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        //不用EBO的DrawCall
-        //glDrawArrays(GL_TRIANGLES, 0, 6);
+        //Calc
+        float timeValue = glfwGetTime();
+        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
-        //用EBO的DrawCall
+        //Draw
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
