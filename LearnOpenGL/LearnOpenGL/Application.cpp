@@ -7,18 +7,7 @@
 #include <sstream>
 #include <string>
 
-std::string readFileToString(const std::string& filePath) 
-{
-    std::ifstream file(filePath);
-    if (!file) 
-    {
-        throw std::runtime_error("Could not open file: " + filePath);
-    }
-
-    std::ostringstream ss;
-    ss << file.rdbuf(); // 将文件内容读入到 stringstream
-    return ss.str();    // 返回 stringstream 的内容作为 string
-}
+#include "Shader.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -31,59 +20,6 @@ void processInput(GLFWwindow* window)
         glfwSetWindowShouldClose(window, true);
 }
 
-
-
-int InitShader()
-{
-    //编译、链接生成着色器
-    std::string vertexShaderSource = readFileToString("shader/default.vs");
-    const char* vs = vertexShaderSource.c_str();
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vs, NULL);
-    glCompileShader(vertexShader);
-    //获取编译结果
-    int  success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::VERTEX\n" << infoLog << std::endl;
-        return -3;
-    }
-
-    //OpenGL或GLSL中定义一个颜色的时候，我们把颜色每个分量的强度设置在0.0到1.0之间
-    std::string fragmentShaderSource = readFileToString("shader/default.fs");
-    const char* fs = fragmentShaderSource.c_str();
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fs, NULL);
-    glCompileShader(fragmentShader);
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::FRAGMENT\n" << infoLog << std::endl;
-        return -4;
-    }
-
-    unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success)
-    {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::PROGRAM\n" << infoLog << std::endl;
-        return -5;
-    }
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-    //------------------------------------
-
-    return shaderProgram;
-}
 
 GLFWwindow* InitWindow(int width, int height, const char* title)
 {
@@ -126,48 +62,19 @@ int main()
         return -1;
     }
 
-    int shaderProgram = InitShader();
-    if (shaderProgram < 0)
-    {
-        std::cout << "InitShader Error!" << std::endl;
-        return -2;
-    }
-
-    //Set Uniform
-    //绑定着色器
-    glUseProgram(shaderProgram);
-    float timeValue = glfwGetTime();
-    float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-    int vertexColorLocation = glGetUniformLocation(shaderProgram, "u_Color");
-    glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
-
-    //不用EBO的VBO存储顶点数据
-    //float vertices[] = 
-    //{
-    //    // 第一个三角形
-    //    0.5f, 0.5f, 0.0f,   // 右上角
-    //    0.5f, -0.5f, 0.0f,  // 右下角
-    //    -0.5f, 0.5f, 0.0f,  // 左上角
-    //    // 第二个三角形
-    //    0.5f, -0.5f, 0.0f,  // 右下角
-    //    -0.5f, -0.5f, 0.0f, // 左下角
-    //    -0.5f, 0.5f, 0.0f   // 左上角
-    //};
-
-
+    Shader shader("shader/default.vs", "shader/default.fs");
 
     float vertices[] = 
     {
-        0.5f, 0.5f, 0.0f,   // 右上角
-        0.5f, -0.5f, 0.0f,  // 右下角
-        -0.5f, -0.5f, 0.0f, // 左下角
-        -0.5f, 0.5f, 0.0f   // 左上角
+        // 位置              // 颜色
+         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // 右下
+        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // 左下
+         0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // 顶部
     };
 
     unsigned int indices[] = 
     {
-        0, 1, 3, // 第一个三角形
-        1, 2, 3  // 第二个三角形
+        0, 1, 2
     };
 
     //生成VAO
@@ -188,9 +95,12 @@ int main()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     //解释顶点属性
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
     
+    shader.Bind();
 
     while (!glfwWindowShouldClose(window)) //渲染循环
     {
@@ -200,19 +110,16 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        //Calc
-        float timeValue = glfwGetTime();
-        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
-
         //Draw
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
         glfwPollEvents();
         glfwSwapBuffers(window);
     }
+
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
 
     glfwTerminate();
     return 0;

@@ -21,9 +21,17 @@
     <ClCompile Include="glad.c">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader\defaut.vs" />
     <None Include="shader\default.fs" />
+    <None Include="shader\default.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Shader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
