@@ -146,3 +146,101 @@ OpenGL允许我们同时绑定多个缓冲，只要它们是不同的缓冲类�
 
 
 
+**着色器**
+
+着色器(Shader)是运行在GPU上的小程序
+
+典型的GLSL代码结构：
+
+```glsl
+#version version_number
+in type in_variable_name;
+in type in_variable_name;
+
+out type out_variable_name;
+
+uniform type uniform_name;
+
+int main()
+{
+  // 处理输入并进行一些图形操作
+  ...
+  // 输出处理过的结果到输出变量
+  out_variable_name = weird_stuff_we_processed;
+}
+```
+
+
+
+能声明的顶点属性是有上限的，由硬件决定。OpenGL确保至少有16个包含4分量的顶点属性可用！
+
+通过一下Code片段可查询：
+
+```glsl
+int nrAttributes;
+glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
+```
+
+
+
+**GLSL语言介绍：**
+
+基础数据类型：
+
+- int
+- float
+- double
+- uint
+- bool
+
+向量类型：
+
+- vecn（float）
+- bvecn（bool）
+- ivecn（int）
+- uvecn（unsigned int）
+- dvecn（double）
+
+
+
+向量的分量访问：
+
+- .x | .y | .z | .w
+- .r | .g | .b | .a
+- .s | .t | .p | .q
+
+灵活的方式：重组（swizzling），如下：
+
+- xyzz
+- xxx
+- xy
+
+
+
+
+
+`layout (location = 0)`  表示：
+
+顶点着色器为它的输入提供一个额外的`layout`标识，这样我们才能把它链接到顶点数据。
+
+
+
+
+
+如果我们打算从一个着色器向另一个着色器发送数据：
+
+- 发送方着色器中声明一个输出
+- 接收方着色器中声明一个类似的输入
+- 类型和名字都一样
+
+
+
+
+
+
+
+
+
+
+

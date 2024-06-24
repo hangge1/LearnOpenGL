@@ -1,7 +1,24 @@
-#include <iostream>
 
 #include <glad/glad.h> 
 #include <GLFW/glfw3.h>
+
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+
+std::string readFileToString(const std::string& filePath) 
+{
+    std::ifstream file(filePath);
+    if (!file) 
+    {
+        throw std::runtime_error("Could not open file: " + filePath);
+    }
+
+    std::ostringstream ss;
+    ss << file.rdbuf(); // 将文件内容读入到 stringstream
+    return ss.str();    // 返回 stringstream 的内容作为 string
+}
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -14,18 +31,15 @@ void processInput(GLFWwindow* window)
         glfwSetWindowShouldClose(window, true);
 }
 
+
+
 int InitShader()
 {
     //编译、链接生成着色器
-    const char* vertexShaderSource = "#version 330 core\n"
-        "layout (location = 0) in vec3 aPos;\n"
-        "void main()\n"
-        "{\n"
-        "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-        "}\0";
-
+    std::string vertexShaderSource = readFileToString("shader/default.vs");
+    const char* vs = vertexShaderSource.c_str();
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glShaderSource(vertexShader, 1, &vs, NULL);
     glCompileShader(vertexShader);
     //获取编译结果
     int  success;
@@ -39,14 +53,10 @@ int InitShader()
     }
 
     //OpenGL或GLSL中定义一个颜色的时候，我们把颜色每个分量的强度设置在0.0到1.0之间
-    const char* fragmentShaderSource = "#version 330 core\n"
-        "out vec4 FragColor;\n"
-        "void main()\n"
-        "{\n"
-        "    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-        "}\n";
+    std::string fragmentShaderSource = readFileToString("shader/default.fs");
+    const char* fs = fragmentShaderSource.c_str();
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glShaderSource(fragmentShader, 1, &fs, NULL);
     glCompileShader(fragmentShader);
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
     if (!success)
@@ -174,8 +184,6 @@ int main()
     glEnableVertexAttribArray(0);
     //绑定着色器
     glUseProgram(shaderProgram);
-
-
 
     while (!glfwWindowShouldClose(window)) //渲染循环
     {

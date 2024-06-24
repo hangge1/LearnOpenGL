@@ -150,6 +150,10 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="glad.c" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shader\default.fs" />
+    <None Include="shader\defaut.vs" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
