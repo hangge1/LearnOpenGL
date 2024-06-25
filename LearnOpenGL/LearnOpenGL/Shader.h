@@ -19,5 +19,6 @@ public:
 	void Bind();
 	void UnBind();
 	void SetUniform1i(const std::string& name, unsigned int v);
+	void SetUniform3f(const std::string& name, const glm::vec3 v);
 	void SetUniform4mat(const std::string& name, const glm::mat4& v);
 };

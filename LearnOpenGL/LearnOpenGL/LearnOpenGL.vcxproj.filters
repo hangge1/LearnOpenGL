@@ -36,6 +36,10 @@
     <None Include="shader\default.vs" />
     <None Include="assets\shader\default.fs" />
     <None Include="assets\shader\default.vs" />
+    <None Include="assets\shader\objectShader.fs" />
+    <None Include="assets\shader\objectShader.vs" />
+    <None Include="assets\shader\lightShader.fs" />
+    <None Include="assets\shader\lightShader.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">

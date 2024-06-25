@@ -20,7 +20,7 @@
 float deltaTime = 0.0f; // 当前帧与上一帧的时间差
 float lastFrame = 0.0f; // 上一帧的时间
 
-Camera camera(glm::vec3(0.0f, 0.0f, 7.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 7.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -162,37 +162,42 @@ int main()
         1, 2, 3
     };
 
-
-    //生成VAO
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    //生成并绑定VBO
+    //生成VBO
     unsigned int VBO;
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    //生成IBO
-    /*unsigned int EBO;
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);*/
+   /* Texture texture("assets/textures/wall.jpg");
+    texture.Bind(0);*/
 
-    //解释顶点属性
+    //生成表示物体的立方体
+    unsigned int objectVAO;
+    glGenVertexArrays(1, &objectVAO);
+    glBindVertexArray(objectVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    // 设置灯立方体的顶点属性（对我们的灯来说仅仅只有位置数据）
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    
-    Shader shader("assets/shader/default.vs", "assets/shader/default.fs");
-    shader.Bind();
-    shader.SetUniform1i("sample", 0);
 
-    Texture texture("assets/textures/people.jpg");
-    texture.Bind(0);
+    Shader objectshader("assets/shader/objectShader.vs", "assets/shader/objectShader.fs");
+    objectshader.Bind();
+    objectshader.SetUniform3f("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
+    objectshader.SetUniform3f("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    objectshader.UnBind();
 
+    //生成表示灯光的立方体
+    unsigned int lightVAO;
+    glGenVertexArrays(1, &lightVAO);
+    glBindVertexArray(lightVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    // 设置灯立方体的顶点属性（对我们的灯来说仅仅只有位置数据）
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    Shader lightshader("assets/shader/lightShader.vs", "assets/shader/lightShader.fs");
+
+    glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
     while (!glfwWindowShouldClose(window)) //渲染循环
     {
@@ -202,24 +207,27 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //旋转90°，缩放一半
-        glm::mat4 model(1.0f);
-        model = glm::rotate(model, glm::radians(55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
-        //cameraPos.y = 0.0f; //模拟真正的FPS摄像机，只能在xz平面上
         glm::mat4 view = camera.GetViewMatrix();
+        glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)screenWidth / screenHeight, 0.1f, 100.0f);
 
-        glm::mat4 projection(1.0f);
-        projection = glm::perspective(glm::radians(camera.GetFov()), (float)screenWidth / screenHeight, 0.1f, 100.0f);
-
-        glm::mat4 transform = projection * view * model;
-
-        shader.SetUniform4mat("u_Transform", transform);
-
-        //Draw
-        glBindVertexArray(VAO);
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        //渲染灯立方
+        glm::mat4 lightmodel(1.0f);
+        lightmodel = glm::translate(lightmodel, lightPos);
+        lightmodel = glm::scale(lightmodel, glm::vec3(0.2f));
+        lightshader.Bind();
+        lightshader.SetUniform4mat("u_Transform", projection * view * lightmodel);
+        glBindVertexArray(lightVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+        //渲染物体立方
+        objectshader.Bind();
+        objectshader.SetUniform4mat("u_Transform", projection * view * glm::mat4(1.0f));
+        glBindVertexArray(objectVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+
 
         glfwPollEvents();
         glfwSwapBuffers(window);
@@ -229,7 +237,6 @@ int main()
         lastFrame = currentFrame;
     }
 
-    glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
 
     glfwTerminate();
