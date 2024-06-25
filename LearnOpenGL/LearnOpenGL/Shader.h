@@ -15,4 +15,5 @@ public:
 
 	void Bind();
 	void UnBind();
+	void SetUniform1i(const std::string& name, unsigned int v);
 };

@@ -9,6 +9,9 @@
 
 #include "Shader.h"
 
+#include "Texture.h"
+
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -62,20 +65,20 @@ int main()
         return -1;
     }
 
-    Shader shader("shader/default.vs", "shader/default.fs");
+    
 
     float vertices[] = 
-    {
-        // 位置              // 颜色
-         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // 右下
-        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // 左下
-         0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // 顶部
+    {        // 位置              // 颜色
+        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   0.0f, 0.0f,// 左下
+         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   1.0f, 0.0f,// 右下
+         0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f,   0.5f, 1.0f// 顶部
     };
 
     unsigned int indices[] = 
     {
         0, 1, 2
     };
+
 
     //生成VAO
     unsigned int VAO;
@@ -95,12 +98,19 @@ int main()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     //解释顶点属性
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
     
+    Shader shader("assets/shader/default.vs", "assets/shader/default.fs");
     shader.Bind();
+    shader.SetUniform1i("sample", 0);
+
+    Texture texture("assets/textures/wall.jpg");
+    texture.Bind(0);
 
     while (!glfwWindowShouldClose(window)) //渲染循环
     {

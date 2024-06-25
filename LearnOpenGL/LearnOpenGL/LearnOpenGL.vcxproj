@@ -71,19 +71,19 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(IncludePath);$(SolutionDir)Dependency\stb_image</IncludePath>
     <LibraryPath>$(SolutionDir)Dependency\GLFW;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(IncludePath);$(SolutionDir)Dependency\stb_image</IncludePath>
     <LibraryPath>$(SolutionDir)Dependency\GLFW;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(IncludePath);$(SolutionDir)Dependency\stb_image</IncludePath>
     <LibraryPath>$(SolutionDir)Dependency\GLFW;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(SolutionDir)Dependency\stb_image;$(IncludePath);$(SolutionDir)Dependency\stb_image</IncludePath>
     <LibraryPath>$(SolutionDir)Dependency\GLFW;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -151,13 +151,20 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\shader\default.fs" />
+    <None Include="assets\shader\default.vs" />
     <None Include="shader\default.fs" />
     <None Include="shader\default.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Texture.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\textures\wall.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
