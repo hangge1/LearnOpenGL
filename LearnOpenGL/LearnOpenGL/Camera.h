@@ -27,6 +27,8 @@ public:
 	glm::mat4 GetViewMatrix();
 
 	float GetFov() const { return fov; }
+
+	glm::vec3 GetPos() const { return cameraPos_; }
 private:
 	glm::vec3 cameraPos_;
 	glm::vec3 cameraFront_;
