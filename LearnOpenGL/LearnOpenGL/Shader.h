@@ -2,6 +2,9 @@
 
 #include <string>
 
+#include "glm.hpp"
+#include "gtc/type_ptr.hpp"
+
 class Shader
 {
 private:
@@ -16,4 +19,5 @@ public:
 	void Bind();
 	void UnBind();
 	void SetUniform1i(const std::string& name, unsigned int v);
+	void SetUniform4mat(const std::string& name, const glm::mat4& v);
 };

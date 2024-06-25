@@ -71,19 +71,19 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(IncludePath);$(SolutionDir)Dependency\stb_image</IncludePath>
+    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(IncludePath);$(SolutionDir)Dependency\stb_image;$(SolutionDir)Dependency\GLM</IncludePath>
     <LibraryPath>$(SolutionDir)Dependency\GLFW;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(IncludePath);$(SolutionDir)Dependency\stb_image</IncludePath>
+    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(IncludePath);$(SolutionDir)Dependency\stb_image;$(SolutionDir)Dependency\GLM</IncludePath>
     <LibraryPath>$(SolutionDir)Dependency\GLFW;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(IncludePath);$(SolutionDir)Dependency\stb_image</IncludePath>
+    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(IncludePath);$(SolutionDir)Dependency\stb_image;$(SolutionDir)Dependency\GLM</IncludePath>
     <LibraryPath>$(SolutionDir)Dependency\GLFW;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(SolutionDir)Dependency\stb_image;$(IncludePath);$(SolutionDir)Dependency\stb_image</IncludePath>
+    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(SolutionDir)Dependency\stb_image;$(IncludePath);$(SolutionDir)Dependency\stb_image;$(SolutionDir)Dependency\GLM</IncludePath>
     <LibraryPath>$(SolutionDir)Dependency\GLFW;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

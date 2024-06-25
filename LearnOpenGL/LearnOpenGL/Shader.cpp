@@ -91,5 +91,19 @@ void Shader::UnBind()
 void Shader::SetUniform1i(const std::string& name, unsigned int v)
 {
     int location = glGetUniformLocation(m_ID, name.c_str());
+    if (location == -1)
+    {
+        __debugbreak();
+    }
     glUniform1i(location, v);
+}
+
+void Shader::SetUniform4mat(const std::string& name, const glm::mat4& v)
+{
+    int location = glGetUniformLocation(m_ID, name.c_str());
+    if (location == -1)
+    {
+        __debugbreak();
+    }
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(v));
 }

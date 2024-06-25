@@ -11,6 +11,10 @@
 
 #include "Texture.h"
 
+#include "glm.hpp"
+#include "gtc/matrix_transform.hpp"
+#include "gtc/type_ptr.hpp"
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -58,7 +62,10 @@ GLFWwindow* InitWindow(int width, int height, const char* title)
 
 int main()
 {
-    GLFWwindow* window = InitWindow(800, 600, "Hello World");
+    int screenWidth = 800;
+    int screenHeight = 600;
+
+    GLFWwindow* window = InitWindow(screenWidth, screenHeight, "Hello World");
     if (window == nullptr)
     {
         std::cout << "InitWindow Error!" << std::endl;
@@ -68,15 +75,18 @@ int main()
     
 
     float vertices[] = 
-    {        // 位置              // 颜色
-        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   0.0f, 0.0f,// 左下
-         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   1.0f, 0.0f,// 右下
-         0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f,   0.5f, 1.0f// 顶部
+    {
+        //     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
+             0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // 右上
+             0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // 右下
+            -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // 左下
+            -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // 左上
     };
 
     unsigned int indices[] = 
     {
-        0, 1, 2
+        0, 1, 3,
+        1, 2, 3
     };
 
 
@@ -109,8 +119,10 @@ int main()
     shader.Bind();
     shader.SetUniform1i("sample", 0);
 
-    Texture texture("assets/textures/wall.jpg");
+    Texture texture("assets/textures/people.jpg");
     texture.Bind(0);
+
+
 
     while (!glfwWindowShouldClose(window)) //渲染循环
     {
@@ -120,9 +132,24 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        //旋转90°，缩放一半
+        glm::mat4 model(1.0f);
+        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+        glm::mat4 view(1.0f);
+        // 注意，我们将矩阵向我们要进行移动场景的反方向移动。
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -5.0f));
+
+        glm::mat4 projection(1.0f);
+        projection = glm::perspective(glm::radians(45.0f), (float)screenWidth / screenHeight, 0.1f, 100.0f);
+
+        glm::mat4 transform = projection * view * model;
+
+        shader.SetUniform4mat("u_Transform", transform);
+
         //Draw
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glfwPollEvents();
         glfwSwapBuffers(window);
