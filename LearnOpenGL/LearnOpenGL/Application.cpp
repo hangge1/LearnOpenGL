@@ -15,20 +15,13 @@
 #include "gtc/matrix_transform.hpp"
 #include "gtc/type_ptr.hpp"
 
+#include "Camera.h"
+
 float deltaTime = 0.0f; // 当前帧与上一帧的时间差
 float lastFrame = 0.0f; // 上一帧的时间
 
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 7.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+Camera camera(glm::vec3(0.0f, 0.0f, 7.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-float pitch = 0.0f;
-float yaw = -90.0f;
-
-float lastX = 400, lastY = 300;
-bool firstMouse = true;
-
-float fov = 20.0f;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -37,47 +30,12 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    if (firstMouse)
-    {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
-
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // 注意这里是相反的，因为y坐标是从底部往顶部依次增大的
-    lastX = xpos;
-    lastY = ypos;
-
-    float sensitivity = 0.1f;
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
-
-    yaw += xoffset;
-    pitch += yoffset;
-
-    if (pitch > 89.0f)
-        pitch = 89.0f;
-    if (pitch < -89.0f)
-        pitch = -89.0f;
-
-    glm::vec3 front;
-    front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
-    front.y = sin(glm::radians(pitch));
-    front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
-    cameraFront = glm::normalize(front);
-
-    //std::cout << "front: （" << cameraFront.x << "," << cameraFront.y << "," << cameraFront.z << ")" << std::endl;
+    camera.MouseCB(xpos, ypos);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    if (fov >= 1.0f && fov <= 45.0f)
-        fov -= yoffset;
-    if (fov <= 1.0f)
-        fov = 1.0f;
-    if (fov >= 45.0f)
-        fov = 45.0f;
+    camera.ScrollCB(yoffset);
 }
 
 void processInput(GLFWwindow* window)
@@ -85,16 +43,18 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    float cameraSpeed = 2.0f * deltaTime; // adjust accordingly
+    int mode = 0;
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        cameraPos += cameraSpeed * cameraFront;
+        mode |= (int)Camera::KEYMODE::KEY_W;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        cameraPos -= cameraSpeed * cameraFront;
+        mode |= (int)Camera::KEYMODE::KEY_S;
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        mode |= (int)Camera::KEYMODE::KEY_A;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        mode |= (int)Camera::KEYMODE::KEY_D;
+
+    camera.KeyCB(deltaTime, (Camera::KEYMODE)mode);
 }
 
 
@@ -246,10 +206,11 @@ int main()
         glm::mat4 model(1.0f);
         model = glm::rotate(model, glm::radians(55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
-        glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        //cameraPos.y = 0.0f; //模拟真正的FPS摄像机，只能在xz平面上
+        glm::mat4 view = camera.GetViewMatrix();
 
         glm::mat4 projection(1.0f);
-        projection = glm::perspective(glm::radians(fov), (float)screenWidth / screenHeight, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(camera.GetFov()), (float)screenWidth / screenHeight, 0.1f, 100.0f);
 
         glm::mat4 transform = projection * view * model;
 
