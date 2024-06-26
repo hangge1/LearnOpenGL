@@ -218,6 +218,14 @@ int main()
         glm::vec3(-1.3f,  1.0f, -1.5f)
     };
 
+    glm::vec3 pointLightPositions[] = 
+    {
+        glm::vec3(0.7f,  0.2f,  2.0f),
+        glm::vec3(2.3f, -3.3f, -4.0f),
+        glm::vec3(-4.0f,  2.0f, -12.0f),
+        glm::vec3(0.0f,  0.0f, -3.0f)
+    };
+
     while (!glfwWindowShouldClose(window)) //渲染循环
     {
         processInput(window);
@@ -230,44 +238,84 @@ int main()
         glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)screenWidth / screenHeight, 0.1f, 100.0f);
 
 
-        //渲染灯立方
-        glm::mat4 lightmodel(1.0f);
-        lightmodel = glm::translate(lightmodel, lightPos);
-        lightmodel = glm::scale(lightmodel, glm::vec3(0.2f));
+        //渲染灯
         lightshader.Bind();
-        lightshader.SetUniform4mat("u_Model", lightmodel);
         lightshader.SetUniform4mat("u_View", view);
         lightshader.SetUniform4mat("u_Project", projection);
-        glBindVertexArray(lightVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        for (size_t i = 0; i < 4; i++)
+        {
+            glm::mat4 lightmodel(1.0f);
+            lightmodel = glm::translate(lightmodel, pointLightPositions[i]);
+            lightmodel = glm::scale(lightmodel, glm::vec3(0.2f));
+            lightshader.SetUniform4mat("u_Model", lightmodel);
+            
+            glBindVertexArray(lightVAO);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+        
 
-
-        //渲染物体立方
+        //渲染物体
         objectshader.Bind();
         objectshader.SetUniform3f("u_ViewPos", camera.GetPos());
 
         //材质颜色
-        /*objectshader.SetUniform3f("u_Material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-        objectshader.SetUniform3f("u_Material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));*/
         objectshader.SetUniform1i("u_Material.diffuse", 0);
         objectshader.SetUniform1i("u_Material.specular", 1);
-        //objectshader.SetUniform3f("u_Material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-        objectshader.SetUniform1f("u_Material.shininess", 256);
+        objectshader.SetUniform1f("u_Material.shininess", 32);
 
-        //光照属性    
-        objectshader.SetUniform3f("u_Light.position", camera.GetPos());
-        objectshader.SetUniform3f("u_Light.direction", camera.GetFront());
-        objectshader.SetUniform1f("u_Light.cutOff", glm::cos(glm::radians(5.0f)));
-        objectshader.SetUniform1f("u_Light.outCutOff", glm::cos(glm::radians(7.0f)));
+        //光照属性
+        //1、定向光源
+        objectshader.SetUniform3f("u_DirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+        objectshader.SetUniform3f("u_DirLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+        objectshader.SetUniform3f("u_DirLight.diffuse", glm::vec3(0.4f, 0.4f, 0.4f));
+        objectshader.SetUniform3f("u_DirLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+        //2、点光源
+        //(0)
+        objectshader.SetUniform3f("u_PointLights[0].position", pointLightPositions[0]);
+        objectshader.SetUniform3f("u_PointLights[0].ambient",   glm::vec3(0.05f, 0.05f, 0.05f));
+        objectshader.SetUniform3f("u_PointLights[0].diffuse",   glm::vec3(0.8f, 0.8f, 0.8f));
+        objectshader.SetUniform3f("u_PointLights[0].specular",  glm::vec3(1.0f, 1.0f, 1.0f));
+        objectshader.SetUniform1f("u_PointLights[0].constant",  1.0f);
+        objectshader.SetUniform1f("u_PointLights[0].linear", 0.09f);
+        objectshader.SetUniform1f("u_PointLights[0].quadratic", 0.032f);
+        //(1)
+        objectshader.SetUniform3f("u_PointLights[1].position", pointLightPositions[1]);
+        objectshader.SetUniform3f("u_PointLights[1].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+        objectshader.SetUniform3f("u_PointLights[1].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+        objectshader.SetUniform3f("u_PointLights[1].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+        objectshader.SetUniform1f("u_PointLights[1].constant", 1.0f);
+        objectshader.SetUniform1f("u_PointLights[1].linear", 0.09f);
+        objectshader.SetUniform1f("u_PointLights[1].quadratic", 0.032f);
+        //(2)
+        objectshader.SetUniform3f("u_PointLights[2].position", pointLightPositions[2]);
+        objectshader.SetUniform3f("u_PointLights[2].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+        objectshader.SetUniform3f("u_PointLights[2].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+        objectshader.SetUniform3f("u_PointLights[2].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+        objectshader.SetUniform1f("u_PointLights[2].constant", 1.0f);
+        objectshader.SetUniform1f("u_PointLights[2].linear", 0.09f);
+        objectshader.SetUniform1f("u_PointLights[2].quadratic", 0.032f);
+        //(3)
+        objectshader.SetUniform3f("u_PointLights[3].position", pointLightPositions[3]);
+        objectshader.SetUniform3f("u_PointLights[3].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+        objectshader.SetUniform3f("u_PointLights[3].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+        objectshader.SetUniform3f("u_PointLights[3].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+        objectshader.SetUniform1f("u_PointLights[3].constant", 1.0f);
+        objectshader.SetUniform1f("u_PointLights[3].linear", 0.09f);
+        objectshader.SetUniform1f("u_PointLights[3].quadratic", 0.032f);
 
-        objectshader.SetUniform3f("u_Light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-        objectshader.SetUniform3f("u_Light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-        objectshader.SetUniform3f("u_Light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-
-        //衰减系数
-        /*objectshader.SetUniform1f("u_Light.constant", 1.0f);
-        objectshader.SetUniform1f("u_Light.linear", 0.09f);
-        objectshader.SetUniform1f("u_Light.quadratic", 0.032f);*/
+        //3、聚光灯
+        objectshader.SetUniform3f("u_SpotLight.position", camera.GetPos());
+        objectshader.SetUniform3f("u_SpotLight.direction", camera.GetFront());
+        objectshader.SetUniform1f("u_SpotLight.cutOff", glm::cos(glm::radians(5.0f)));
+        objectshader.SetUniform1f("u_SpotLight.outerCutOff", glm::cos(glm::radians(7.0f)));
+        objectshader.SetUniform1f("u_SpotLight.constant", 1.0f);
+        objectshader.SetUniform1f("u_SpotLight.linear", 0.09f);
+        objectshader.SetUniform1f("u_SpotLight.quadratic", 0.032f);
+        objectshader.SetUniform3f("u_SpotLight.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
+        objectshader.SetUniform3f("u_SpotLight.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
+        objectshader.SetUniform3f("u_SpotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+        objectshader.SetUniform4mat("u_View", view);
+        objectshader.SetUniform4mat("u_Project", projection);
 
         for (size_t i = 0; i < 10; i++)
         {
@@ -276,13 +324,10 @@ int main()
             float angle = 20.0f * i;
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 
-            objectshader.SetUniform4mat("u_Model", model);
-            objectshader.SetUniform4mat("u_View", view);
-            objectshader.SetUniform4mat("u_Project", projection);
+            objectshader.SetUniform4mat("u_Model", model); 
             glBindVertexArray(objectVAO);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
-
 
 
         glfwPollEvents();
