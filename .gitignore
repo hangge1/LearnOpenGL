@@ -34,3 +34,9 @@
 .vs/
 
 x64/
+/LearnOpenGL/Dependency/Assimp/Debug/lib/pkgconfig
+/LearnOpenGL/Dependency/Assimp/Debug/lib/cmake
+/LearnOpenGL/Dependency/Assimp/Release/lib/pkgconfig
+/LearnOpenGL/Dependency/Assimp/Release/lib/cmake
+assimp-5.4.1
+assimp-5.4.1.zip

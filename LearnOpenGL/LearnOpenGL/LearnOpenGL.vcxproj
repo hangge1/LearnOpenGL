@@ -71,20 +71,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(IncludePath);$(SolutionDir)Dependency\stb_image;$(SolutionDir)Dependency\GLM</IncludePath>
-    <LibraryPath>$(SolutionDir)Dependency\GLFW;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(IncludePath);$(SolutionDir)Dependency\stb_image;$(SolutionDir)Dependency\GLM;$(SolutionDir)Dependency\Assimp\include</IncludePath>
+    <LibraryPath>$(SolutionDir)Dependency\GLFW;$(SolutionDir)Dependency\Assimp\$(Configuration)\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(IncludePath);$(SolutionDir)Dependency\stb_image;$(SolutionDir)Dependency\GLM</IncludePath>
-    <LibraryPath>$(SolutionDir)Dependency\GLFW;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(IncludePath);$(SolutionDir)Dependency\stb_image;$(SolutionDir)Dependency\GLM;$(SolutionDir)Dependency\Assimp\include</IncludePath>
+    <LibraryPath>$(SolutionDir)Dependency\GLFW;$(SolutionDir)Dependency\Assimp\$(Configuration)\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(IncludePath);$(SolutionDir)Dependency\stb_image;$(SolutionDir)Dependency\GLM</IncludePath>
-    <LibraryPath>$(SolutionDir)Dependency\GLFW;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(IncludePath);$(SolutionDir)Dependency\stb_image;$(SolutionDir)Dependency\GLM;$(SolutionDir)Dependency\Assimp\include</IncludePath>
+    <LibraryPath>$(SolutionDir)Dependency\GLFW;$(SolutionDir)Dependency\Assimp\$(Configuration)\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(SolutionDir)Dependency\stb_image;$(IncludePath);$(SolutionDir)Dependency\stb_image;$(SolutionDir)Dependency\GLM</IncludePath>
-    <LibraryPath>$(SolutionDir)Dependency\GLFW;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Dependency\GLFW\include;$(SolutionDir)Dependency\GLAD\include;$(SolutionDir)Dependency\stb_image;$(IncludePath);$(SolutionDir)Dependency\stb_image;$(SolutionDir)Dependency\GLM;$(SolutionDir)Dependency\Assimp\include</IncludePath>
+    <LibraryPath>$(SolutionDir)Dependency\GLFW;$(SolutionDir)Dependency\Assimp\$(Configuration)\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -96,8 +96,11 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);glfw3.lib;opengl32.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);glfw3.lib;opengl32.lib;assimp-vc143-mtd.lib</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>xcopy $(SolutionDir)Dependency\Assimp\$(Configuration)\bin\assimp-vc143-mtd.dll $(TargetDir) /d </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -113,8 +116,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);glfw3.lib;opengl32.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);glfw3.lib;opengl32.lib;assimp-vc143-mt.lib</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>xcopy $(SolutionDir)Dependency\Assimp\$(Configuration)\bin\assimp-vc143-mt.dll $(TargetDir) /d </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -126,8 +132,11 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);glfw3.lib;opengl32.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);glfw3.lib;opengl32.lib;assimp-vc143-mtd.lib</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>xcopy $(SolutionDir)Dependency\Assimp\$(Configuration)\bin\assimp-vc143-mtd.dll $(TargetDir) /d </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -144,8 +153,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);glfw3.lib;opengl32.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);glfw3.lib;opengl32.lib;assimp-vc143-mt.lib</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>xcopy $(SolutionDir)Dependency\Assimp\$(Configuration)\bin\assimp-vc143-mt.dll $(TargetDir) /d </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
