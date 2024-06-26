@@ -254,14 +254,17 @@ int main()
         //objectshader.SetUniform3f("u_Material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
         objectshader.SetUniform1f("u_Material.shininess", 256);
 
-        //光照属性
-        
-        //objectshader.SetUniform3f("u_Light.position", glm::vec3(0.0f, 0.0f, 3.0f));
-        objectshader.SetUniform3f("u_Light.direction", glm::vec3(0.0f, 0.0f, -1.0f));
-
+        //光照属性    
+        objectshader.SetUniform3f("u_Light.position", glm::vec3(0.0f, 0.0f, 3.0f));
+        //objectshader.SetUniform3f("u_Light.direction", glm::vec3(0.0f, 0.0f, -1.0f));
         objectshader.SetUniform3f("u_Light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
         objectshader.SetUniform3f("u_Light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
         objectshader.SetUniform3f("u_Light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+        //衰减系数
+        objectshader.SetUniform1f("u_Light.constant", 1.0f);
+        objectshader.SetUniform1f("u_Light.linear", 0.09f);
+        objectshader.SetUniform1f("u_Light.quadratic", 0.032f);
 
         for (size_t i = 0; i < 10; i++)
         {
