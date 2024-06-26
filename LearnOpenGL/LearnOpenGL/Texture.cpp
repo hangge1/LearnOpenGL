@@ -35,12 +35,14 @@ Texture::Texture(const std::string& path)
 
 Texture::Texture(const Texture& rhs)
 {
-	type = rhs.type;
+	Clone(rhs);
+}
 
-	m_ID = rhs.m_ID;
-	width_ = rhs.width_;
-	height_ = rhs.height_;
-	nchannel_ = rhs.nchannel_;
+Texture& Texture::operator=(const Texture& rhs)
+{
+	Clone(rhs);
+
+	return *this;
 }
 
 Texture::~Texture()
@@ -57,6 +59,16 @@ void Texture::Bind(unsigned int slot) const
 void Texture::UnBind() const
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Texture::Clone(const Texture& rhs)
+{
+	type = rhs.type;
+
+	m_ID = rhs.m_ID;
+	width_ = rhs.width_;
+	height_ = rhs.height_;
+	nchannel_ = rhs.nchannel_;
 }
 
 unsigned int Texture::GetFormat() const

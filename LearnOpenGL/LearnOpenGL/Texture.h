@@ -11,7 +11,7 @@ public:
 	~Texture();
 
 	Texture(const Texture& rhs);
-	Texture& operator=(const Texture&) = delete;
+	Texture& operator=(const Texture&);
 
 	void Bind(unsigned int slot = 0) const;
 	void UnBind() const;
@@ -19,6 +19,7 @@ public:
 	std::string type;
 private:
 	unsigned int GetFormat() const;
+	void Clone(const Texture& rhs);
 private:
 	unsigned int m_ID;
 	int width_;

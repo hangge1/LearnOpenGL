@@ -33,6 +33,9 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\default.fs" />
@@ -43,6 +46,8 @@
     <None Include="assets\shader\objectShader.vs" />
     <None Include="assets\shader\lightShader.fs" />
     <None Include="assets\shader\lightShader.vs" />
+    <None Include="assets\shader\modelShader.fs" />
+    <None Include="assets\shader\modelShader.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -55,6 +60,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
