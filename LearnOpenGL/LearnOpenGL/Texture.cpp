@@ -33,6 +33,16 @@ Texture::Texture(const std::string& path)
 	stbi_image_free(data);
 }
 
+Texture::Texture(const Texture& rhs)
+{
+	type = rhs.type;
+
+	m_ID = rhs.m_ID;
+	width_ = rhs.width_;
+	height_ = rhs.height_;
+	nchannel_ = rhs.nchannel_;
+}
+
 Texture::~Texture()
 {
 	glDeleteTextures(1, &m_ID);

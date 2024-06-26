@@ -77,18 +77,18 @@ Shader::~Shader()
     glDeleteProgram(m_ID);
 }
 
-void Shader::Bind()
+void Shader::Bind() const
 {
     glUseProgram(m_ID);
 }
 
 
-void Shader::UnBind()
+void Shader::UnBind() const
 {
     glUseProgram(0);
 }
 
-void Shader::SetUniform1i(const std::string& name, unsigned int v)
+void Shader::SetUniform1i(const std::string& name, unsigned int v) const
 {
     int location = glGetUniformLocation(m_ID, name.c_str());
     if (location == -1)
@@ -98,7 +98,7 @@ void Shader::SetUniform1i(const std::string& name, unsigned int v)
     glUniform1i(location, v);
 }
 
-void Shader::SetUniform1f(const std::string& name, float v)
+void Shader::SetUniform1f(const std::string& name, float v) const
 {
     int location = glGetUniformLocation(m_ID, name.c_str());
     if (location == -1)
@@ -108,7 +108,7 @@ void Shader::SetUniform1f(const std::string& name, float v)
     glUniform1f(location, v);
 }
 
-void Shader::SetUniform3f(const std::string& name, const glm::vec3 v)
+void Shader::SetUniform3f(const std::string& name, const glm::vec3 v) const
 {
     int location = glGetUniformLocation(m_ID, name.c_str());
     if (location == -1)
@@ -118,7 +118,7 @@ void Shader::SetUniform3f(const std::string& name, const glm::vec3 v)
     glUniform3f(location, v.x, v.y, v.z);
 }
 
-void Shader::SetUniform4mat(const std::string& name, const glm::mat4& v)
+void Shader::SetUniform4mat(const std::string& name, const glm::mat4& v) const
 {
     int location = glGetUniformLocation(m_ID, name.c_str());
     if (location == -1)

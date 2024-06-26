@@ -16,10 +16,10 @@ public:
 	Shader(const Shader&) = delete;
 	Shader&  operator=(const Shader&) = delete;
 
-	void Bind();
-	void UnBind();
-	void SetUniform1i(const std::string& name, unsigned int v);
-	void SetUniform1f(const std::string& name, float v);
-	void SetUniform3f(const std::string& name, const glm::vec3 v);
-	void SetUniform4mat(const std::string& name, const glm::mat4& v);
+	void Bind() const;
+	void UnBind() const;
+	void SetUniform1i(const std::string& name, unsigned int v) const;
+	void SetUniform1f(const std::string& name, float v) const;
+	void SetUniform3f(const std::string& name, const glm::vec3 v) const;
+	void SetUniform4mat(const std::string& name, const glm::mat4& v) const;
 };
