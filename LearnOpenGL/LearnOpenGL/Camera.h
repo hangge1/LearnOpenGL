@@ -45,6 +45,6 @@ private:
 	float lastX;
 	float lastY;
 
-	float cameraMoveSpeed = 2.0f;
+	float cameraMoveSpeed = 4.0f;
 	float mouseSensitivity = 0.1f;
 };
