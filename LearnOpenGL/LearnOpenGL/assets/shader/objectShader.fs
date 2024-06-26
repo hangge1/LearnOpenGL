@@ -9,7 +9,8 @@ struct Material
 
 struct Light 
 {
-    vec3 position;
+    //vec3 position;
+    vec3 direction;
 
     vec3 ambient;
     vec3 diffuse;
@@ -29,7 +30,7 @@ uniform Material u_Material;
 void main()
 {
     vec3 norm = normalize(vNormal);
-    vec3 lightDir = normalize(u_Light.position - vPos);
+    vec3 lightDir = normalize(-u_Light.direction);//normalize(u_Light.position - vPos);
 
     //»·¾³¹â
     vec3 ambient = u_Light.ambient * vec3(texture(u_Material.diffuse,vTexCoord));
