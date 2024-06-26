@@ -29,6 +29,8 @@ public:
 	float GetFov() const { return fov; }
 
 	glm::vec3 GetPos() const { return cameraPos_; }
+
+	glm::vec3 GetFront() const { return cameraFront_; }
 private:
 	glm::vec3 cameraPos_;
 	glm::vec3 cameraFront_;

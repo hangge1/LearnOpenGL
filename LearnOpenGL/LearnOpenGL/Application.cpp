@@ -20,7 +20,7 @@
 float deltaTime = 0.0f; // 当前帧与上一帧的时间差
 float lastFrame = 0.0f; // 上一帧的时间
 
-Camera camera(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -223,7 +223,7 @@ int main()
         processInput(window);
 
         //Clear
-        //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glm::mat4 view = camera.GetViewMatrix();
@@ -255,16 +255,19 @@ int main()
         objectshader.SetUniform1f("u_Material.shininess", 256);
 
         //光照属性    
-        objectshader.SetUniform3f("u_Light.position", glm::vec3(0.0f, 0.0f, 3.0f));
-        //objectshader.SetUniform3f("u_Light.direction", glm::vec3(0.0f, 0.0f, -1.0f));
+        objectshader.SetUniform3f("u_Light.position", camera.GetPos());
+        objectshader.SetUniform3f("u_Light.direction", camera.GetFront());
+        objectshader.SetUniform1f("u_Light.cutOff", glm::cos(glm::radians(5.0f)));
+        objectshader.SetUniform1f("u_Light.outCutOff", glm::cos(glm::radians(7.0f)));
+
         objectshader.SetUniform3f("u_Light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
         objectshader.SetUniform3f("u_Light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
         objectshader.SetUniform3f("u_Light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
         //衰减系数
-        objectshader.SetUniform1f("u_Light.constant", 1.0f);
+        /*objectshader.SetUniform1f("u_Light.constant", 1.0f);
         objectshader.SetUniform1f("u_Light.linear", 0.09f);
-        objectshader.SetUniform1f("u_Light.quadratic", 0.032f);
+        objectshader.SetUniform1f("u_Light.quadratic", 0.032f);*/
 
         for (size_t i = 0; i < 10; i++)
         {
@@ -291,6 +294,8 @@ int main()
     }
 
     glDeleteBuffers(1, &VBO);
+    glDeleteVertexArrays(1, &lightVAO);
+    glDeleteVertexArrays(1, &objectVAO);
 
     glfwTerminate();
     return 0;
