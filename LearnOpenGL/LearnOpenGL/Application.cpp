@@ -20,7 +20,7 @@
 float deltaTime = 0.0f; // 当前帧与上一帧的时间差
 float lastFrame = 0.0f; // 上一帧的时间
 
-Camera camera(glm::vec3(0.0f, 0.0f, 7.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -171,7 +171,7 @@ int main()
    /* Texture texture("assets/textures/wall.jpg");
     texture.Bind(0);*/
 
-    glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+    glm::vec3 lightPos(0.0f, 0.0f, 5.0f);
 
     //生成表示物体的立方体
     unsigned int objectVAO;
