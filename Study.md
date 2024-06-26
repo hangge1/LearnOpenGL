@@ -577,17 +577,83 @@ Specular镜面反射：所谓的高光
 
 
 
+Blinn Phong着色模型的计算公式：
+$$
+Color = k_aColor_{Ambient} + k_dColor_{Diffuse} + k_sColor_{Specular}
+$$
 
 
 
 
 
 
+### 材质
+
+现实世界，每个物体会对光产生不同的反应。
+
+钢制物体看起来通常会比陶土花瓶更闪闪发光，一个木头箱子也不会与一个钢制箱子反射同样程度的光。
+
+有些物体反射光的时候不会有太多的散射(Scatter)，因而产生较小的高光点，而有些物体则会散射很多，产生一个有着更大半径的高光点。
+
+通过上节，我们知道：
+
+可以分别为三个光照分量定义一个材质颜色(Material Color)：
+
+环境光照、漫反射光照和镜面光照，再添加一个反光度(Shininess)分量，就有了全部所需的材质属性！
+
+```glsl
+#version 330 core
+struct Material {
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float shininess;
+}; 
+
+uniform Material material;
+```
+
+
+
+- ambient材质向量
+    - 定义环境光照下表面反射什么颜色
+
+- diffuse材质向量
+    - 定义在漫反射光照下表面的颜色
+- specular材质向量
+    - 定义表面上镜面高光的颜色
+- shininess反光度分量
+    - 影响镜面高光的散射/半径
+
+
+
+**材质属性定义了物体的实际表现！**
+
+
+
+**以下定义光照属性**，替代原本的颜色！
+
+```glsl
+struct Light {
+    vec3 position;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+uniform Light light;
+```
 
 
 
 
 
+**最终的片段着色器颜色：**
 
-
+```glsl
+vec3 ambient  = light.ambient * material.ambient;
+vec3 diffuse  = light.diffuse * (diff * material.diffuse);
+vec3 specular = light.specular * (spec * material.specular);
+```
 

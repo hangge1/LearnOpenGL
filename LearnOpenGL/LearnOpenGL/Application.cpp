@@ -209,6 +209,12 @@ int main()
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)screenWidth / screenHeight, 0.1f, 100.0f);
 
+        /*float angle = (float)glfwGetTime();
+        float lightPosX = 3.0f * sin(angle);
+        float lightPosZ = 3.0f * cos(angle);
+        lightPos.x = lightPosX;
+        lightPos.z = lightPosZ;*/
+
         //渲染灯立方
         glm::mat4 lightmodel(1.0f);
         lightmodel = glm::translate(lightmodel, lightPos);
@@ -223,10 +229,21 @@ int main()
 
         //渲染物体立方
         objectshader.Bind();
-        objectshader.SetUniform3f("u_objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
-        objectshader.SetUniform3f("u_lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-        objectshader.SetUniform3f("u_lightPos", lightPos);
         objectshader.SetUniform3f("u_ViewPos", camera.GetPos());
+
+        //材质颜色
+        objectshader.SetUniform3f("u_Material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+        objectshader.SetUniform3f("u_Material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+        objectshader.SetUniform3f("u_Material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+        objectshader.SetUniform1f("u_Material.shininess", 256);
+
+        //光照属性
+        
+        objectshader.SetUniform3f("u_Light.position", glm::vec3(0.0f, 0.0f, 3.0f));
+        objectshader.SetUniform3f("u_Light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+        objectshader.SetUniform3f("u_Light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+        objectshader.SetUniform3f("u_Light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
         objectshader.SetUniform4mat("u_Model", glm::mat4(1.0f));
         objectshader.SetUniform4mat("u_View", view);
         objectshader.SetUniform4mat("u_Project", projection);
