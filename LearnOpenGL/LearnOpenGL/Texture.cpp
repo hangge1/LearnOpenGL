@@ -21,7 +21,8 @@ Texture::Texture(const std::string& path)
 	unsigned char* data = stbi_load(path.c_str(), &width_, &height_, &nchannel_, 0);
 	if (data)
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width_, height_, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		unsigned int format = GetFormat();
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width_, height_, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else
@@ -46,4 +47,16 @@ void Texture::Bind(unsigned int slot) const
 void Texture::UnBind() const
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+unsigned int Texture::GetFormat() const
+{
+	unsigned int format = 0;
+	if (nchannel_ == 1)
+		format = GL_RED;
+	else if (nchannel_ == 3)
+		format = GL_RGB;
+	else if (nchannel_ == 4)
+		format = GL_RGBA;
+	return format;
 }

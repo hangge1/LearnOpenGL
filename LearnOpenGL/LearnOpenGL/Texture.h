@@ -15,6 +15,9 @@ public:
 
 	void Bind(unsigned int slot = 0) const;
 	void UnBind() const;
+
+private:
+	unsigned int GetFormat() const;
 private:
 	unsigned int m_ID;
 	int width_;

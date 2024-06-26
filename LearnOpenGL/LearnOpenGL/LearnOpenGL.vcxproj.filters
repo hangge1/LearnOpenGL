@@ -56,5 +56,14 @@
     <Image Include="assets\textures\wall.jpg">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="assets\textures\people.jpg">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="assets\textures\diffuseMap.png">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="assets\textures\specularMap.png">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

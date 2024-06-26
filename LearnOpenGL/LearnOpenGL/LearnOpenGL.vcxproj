@@ -170,6 +170,9 @@
     <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="assets\textures\diffuseMap.png" />
+    <Image Include="assets\textures\people.jpg" />
+    <Image Include="assets\textures\specularMap.png" />
     <Image Include="assets\textures\wall.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
