@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include "Shader.h"
 
@@ -115,8 +116,11 @@ int main()
     //启动深度测试
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
-    //启动模板测试
-    glEnable(GL_STENCIL_TEST);
+
+    //设置面剔除(默认是逆时针正向，剔除背面)
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
+    glCullFace(GL_BACK);
 
     float cubeVertices[] = 
     {
@@ -176,6 +180,13 @@ int main()
          5.0f, -0.5f, -5.0f,  2.0f, 2.0f
     };
 
+    std::vector<glm::vec3> vegetation;
+    vegetation.push_back(glm::vec3(-1.5f, 0.0f, -0.48f));
+    vegetation.push_back(glm::vec3(1.5f, 0.0f, 0.51f));
+    vegetation.push_back(glm::vec3(0.0f, 0.0f, 0.7f));
+    vegetation.push_back(glm::vec3(-0.3f, 0.0f, -2.3f));
+    vegetation.push_back(glm::vec3(0.5f, 0.0f, -0.6f));
+
     // cube VAO
     unsigned int cubeVAO, cubeVBO;
     glGenVertexArrays(1, &cubeVAO);
@@ -201,13 +212,15 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glBindVertexArray(0);
 
+
     Texture cubeTexture("assets/textures/diffuseMap.png");
     Texture floorTexture("assets/textures/wall.jpg");
+
     cubeTexture.Bind(0);
     floorTexture.Bind(1);
 
+
     Shader shader("assets/shader/stencil_testing.vs", "assets/shader/stencil_testing.fs");
-    Shader shaderSingleColor("assets/shader/stencil_testing.vs", "assets/shader/stencil_single_color.fs");
 
     while (!glfwWindowShouldClose(window)) //渲染循环
     {
@@ -215,17 +228,14 @@ int main()
 
         //Clear
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClearStencil(0);
         glClearDepth(1.0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //======================================================Draw
-        shaderSingleColor.Bind();
+
         glm::mat4 model(1.0f);
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
-        shaderSingleColor.SetUniform4mat("view", view);
-        shaderSingleColor.SetUniform4mat("projection", projection);
 
         shader.Bind();
         shader.SetUniform4mat("view", view);
@@ -234,20 +244,13 @@ int main()
         //========绘制轮廓========
 
         //1、绘制地板
-        //设置规则: 模板缓冲始终保持不变
-        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
         glBindVertexArray(planeVAO);
         floorTexture.Bind();
         shader.SetUniform4mat("model", glm::mat4(1.0f));
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
 
-        //2、设置模板测试规则： 
-        //模板和深度测试都通过，模板缓冲置1
-        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-        glStencilFunc(GL_ALWAYS, 1, 0xFF);
-        glStencilMask(0xFF);
-        //绘制立方体
+        //2、绘制立方体
         glBindVertexArray(cubeVAO);
         glActiveTexture(GL_TEXTURE0);
         cubeTexture.Bind();
@@ -258,33 +261,8 @@ int main()
         model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
         shader.SetUniform4mat("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
-        //======>到目前位置，已经将两个立方体对应位置模板缓冲置为1，其余为0
 
-
-        //3、渲染边框
-        //设置模板测试规则： 如果模板缓冲内容 != 1，则通过
-        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-        glDisable(GL_DEPTH_TEST); //设置边框置顶绘制
-        shaderSingleColor.Bind();
-        float scale = 1.1f;
-        // cubes
-        glBindVertexArray(cubeVAO);
-        cubeTexture.Bind();
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-        model = glm::scale(model, glm::vec3(scale, scale, scale));
-        shaderSingleColor.SetUniform4mat("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(scale, scale, scale));
-        shaderSingleColor.SetUniform4mat("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        glBindVertexArray(0);
-        //glStencilMask(0xFF);
-        //glStencilFunc(GL_ALWAYS, 0, 0xFF);
-        glEnable(GL_DEPTH_TEST);
+        
 
         //End======================================================Draw
         glfwPollEvents();

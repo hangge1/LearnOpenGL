@@ -82,5 +82,11 @@
     <Image Include="assets\textures\specularMap.png">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="assets\textures\window.png">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="assets\textures\grass.png">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

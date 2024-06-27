@@ -193,9 +193,11 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\textures\diffuseMap.png" />
+    <Image Include="assets\textures\grass.png" />
     <Image Include="assets\textures\people.jpg" />
     <Image Include="assets\textures\specularMap.png" />
     <Image Include="assets\textures\wall.jpg" />
+    <Image Include="assets\textures\window.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
