@@ -178,6 +178,9 @@
     <None Include="assets\shader\modelShader.vs" />
     <None Include="assets\shader\objectShader.fs" />
     <None Include="assets\shader\objectShader.vs" />
+    <None Include="assets\shader\stencil_single_color.fs" />
+    <None Include="assets\shader\stencil_testing.fs" />
+    <None Include="assets\shader\stencil_testing.vs" />
     <None Include="shader\default.fs" />
     <None Include="shader\default.vs" />
   </ItemGroup>

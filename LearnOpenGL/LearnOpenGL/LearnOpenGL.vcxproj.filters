@@ -48,6 +48,9 @@
     <None Include="assets\shader\lightShader.vs" />
     <None Include="assets\shader\modelShader.fs" />
     <None Include="assets\shader\modelShader.vs" />
+    <None Include="assets\shader\stencil_testing.vs" />
+    <None Include="assets\shader\stencil_single_color.fs" />
+    <None Include="assets\shader\stencil_testing.fs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
