@@ -7,6 +7,7 @@
 #include "stb_image.h"
 
 Texture::Texture(const std::string& path)
+	: path_(path)
 {
 	glGenTextures(1, &m_ID);
 	glBindTexture(GL_TEXTURE_2D, m_ID);
@@ -17,7 +18,7 @@ Texture::Texture(const std::string& path)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	stbi_set_flip_vertically_on_load(true);
+	//stbi_set_flip_vertically_on_load(true);
 	unsigned char* data = stbi_load(path.c_str(), &width_, &height_, &nchannel_, 0);
 	if (data)
 	{
@@ -32,6 +33,12 @@ Texture::Texture(const std::string& path)
 
 	stbi_image_free(data);
 }
+
+Texture::Texture(Texture&& rhs)
+{
+	Clone(rhs);
+}
+
 
 Texture::Texture(const Texture& rhs)
 {
@@ -63,7 +70,8 @@ void Texture::UnBind() const
 
 void Texture::Clone(const Texture& rhs)
 {
-	type = rhs.type;
+	type_ = rhs.type_;
+	path_ = rhs.path_;
 
 	m_ID = rhs.m_ID;
 	width_ = rhs.width_;

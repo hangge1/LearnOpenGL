@@ -1,9 +1,14 @@
 
 #include "Mesh.h"
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures)
-	: vertices_(vertices), indices_(indices), textures_(textures)
+Mesh::Mesh(std::vector<Vertex> vertices,
+            std::vector<unsigned int> indices,
+            std::vector<Texture*> textures)
 {
+    vertices_ = vertices;
+    indices_ = indices;
+    textures_ = textures;
+
 	SetupMesh();
 }
 
@@ -16,13 +21,19 @@ void Mesh::Draw(const Shader& shader) const
     {
         // 获取纹理序号（diffuse_textureN 中的 N）
         std::string number;
-        std::string name = textures_[i].type;
+        std::string name = textures_[i]->type_;
         if (name == "texture_diffuse")
             number = std::to_string(diffuseNr++);
         else if (name == "texture_specular")
+        {
+            continue; //暂时不管高光
             number = std::to_string(specularNr++);
+        }
 
-        shader.SetUniform1i("material." + name + number, i);
+        textures_[i]->Bind(i);
+        //shader.SetUniform1i("material." + name + number, i);
+        shader.SetUniform1i(name + number, i);
+        
     }
 
     // 绘制网格
@@ -38,8 +49,8 @@ void Mesh::SetupMesh()
     glGenBuffers(1, &EBO);
 
     glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(Vertex), vertices_.data(), GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);

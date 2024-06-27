@@ -5,14 +5,14 @@
 
 Model::Model(const std::string& path)
 {
-
+    loadModel(path);
 }
 
 void Model::Draw(const Shader& shader)
 {
 	for (const auto& mesh : meshes_)
 	{
-		mesh.Draw(shader);
+		mesh->Draw(shader);
 	}
 }
 
@@ -46,7 +46,7 @@ void Model::processNode(aiNode* node, const aiScene* scene)
     }
 }
 
-Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
+Mesh* Model::processMesh(aiMesh* mesh, const aiScene* scene)
 {
     std::vector<Vertex> vertices;
     for (unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -78,30 +78,46 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
     }
 
     // 处理材质
-    std::vector<Texture> textures;
+    std::vector<Texture*> textures;
     if (mesh->mMaterialIndex >= 0)
     {
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-        std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+        std::vector<Texture*> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-        std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-        textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+        //std::vector<Texture*> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+        //textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
 
-    return Mesh(vertices, indices, textures);
+    return new Mesh(vertices, indices, textures);
 }
 
-std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
+std::vector<Texture*> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, const std::string& typeName)
 {
-    std::vector<Texture> textures;
+    std::vector<Texture*> textures;
 
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
     {
         aiString str;
         mat->GetTexture(type, i, &str);
-        Texture texture(directory_ + "/" + str.C_Str());
-        texture.type = typeName;
-        textures.push_back(texture);
+        //判断纹理是否已加载
+        bool skip = false;
+        for (unsigned int j = 0; j < textures_loaded_.size(); j++)
+        {
+            if (std::strcmp(textures_loaded_[j]->path_.data(), str.C_Str()) == 0)
+            {
+                textures.push_back(textures_loaded_[j]);
+                skip = true;
+                break;
+            }
+        }
+        if (!skip)
+        {   // 如果纹理还没有被加载，则加载它
+            Texture* texture = new Texture((directory_ + "/" + str.C_Str()));
+            texture->type_ = typeName;
+            texture->path_ = str.C_Str();
+            textures.push_back(texture);
+            textures_loaded_.push_back(texture); // 添加到已加载的纹理中
+        }
     }
 
     return textures;

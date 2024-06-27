@@ -8,6 +8,7 @@ class Texture
 {
 public:
 	Texture(const std::string& path);
+	Texture(Texture&& rhs);
 	~Texture();
 
 	Texture(const Texture& rhs);
@@ -16,7 +17,8 @@ public:
 	void Bind(unsigned int slot = 0) const;
 	void UnBind() const;
 
-	std::string type;
+	std::string type_;
+	std::string path_;
 private:
 	unsigned int GetFormat() const;
 	void Clone(const Texture& rhs);
