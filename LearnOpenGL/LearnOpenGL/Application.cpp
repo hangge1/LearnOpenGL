@@ -146,48 +146,47 @@ int main()
 
     float cubeVertices[] = 
     {
-        // positions          // texture Coords
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
 
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
     };
 
     float planeVertices[] = 
@@ -271,15 +270,12 @@ int main()
     };
 
     {
-        FrameBuffer fb(screenWidth, screenHeight);
-
-
         // cube VAO
         VertexArray cubeVAO;
         VertexBuffer cubeVBO(cubeVertices, sizeof(cubeVertices));
         VertexBufferLayout cubeLayout;
         cubeLayout.Push<float>(3);
-        cubeLayout.Push<float>(2);
+        cubeLayout.Push<float>(3);
         cubeVAO.AddBuffer(cubeVBO, cubeLayout);
 
         // plane VAO
@@ -289,14 +285,6 @@ int main()
         planeLayout.Push<float>(3);
         planeLayout.Push<float>(2);
         planeVAO.AddBuffer(planeVBO, planeLayout);
-
-        // screen VAO
-        VertexArray screenVAO;
-        VertexBuffer screenVBO(screenVertices, sizeof(screenVertices));
-        VertexBufferLayout screenLayout;
-        screenLayout.Push<float>(2);
-        screenLayout.Push<float>(2);
-        screenVAO.AddBuffer(screenVBO, screenLayout);
 
         // skyBox VAO
         VertexArray skyboxVAO;
@@ -314,34 +302,27 @@ int main()
         skyBoxTexture.Bind(2);
 
         Shader shader("assets/shader/stencil_testing.vs", "assets/shader/stencil_testing.fs");
-        Shader screenShader("assets/shader/fboRenderShader.vs", "assets/shader/fboRenderShader.fs");
         Shader skyboxShader("assets/shader/skybox.vs", "assets/shader/skybox.fs");
         skyboxShader.Bind();
         skyboxShader.SetUniform1i("skybox", 2);
 
         Shader reflectShader("assets/shader/reflectShader.vs", "assets/shader/reflectShader.fs");
+        reflectShader.Bind();
+        reflectShader.SetUniform1i("skybox", 2);
 
         Renderer renderer;
 
         while (!glfwWindowShouldClose(window)) //渲染循环
         {
             processInput(window);
-
-            glm::mat4 view = camera.GetViewMatrix();
-            glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
-
-            
-
-            //===================第一阶段 离线渲染=====================
-            fb.Bind();
-            glEnable(GL_DEPTH_TEST);
-
+ 
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             glClearDepth(1.0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            //======================================================Draw
             glm::mat4 model(1.0f);
+            glm::mat4 view = camera.GetViewMatrix();
+            glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
 
             //========绘制轮廓========
             ////1、绘制地板
@@ -352,45 +333,31 @@ int main()
             shader.SetUniform4mat("model", glm::mat4(1.0f));
             renderer.Draw(planeVAO, shader, 6);
 
-
             //2、绘制立方体
-            shader.Bind();
-            shader.SetUniform1i("texture1", 0);
+            reflectShader.Bind();
+            reflectShader.SetUniform3f("cameraPos", camera.GetPos());
             model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-            shader.SetUniform4mat("model", model);
-            renderer.Draw(cubeVAO, shader, 36);
+            reflectShader.SetUniform4mat("model", model);
+            reflectShader.SetUniform4mat("view", view);
+            reflectShader.SetUniform4mat("projection", projection);
+            renderer.Draw(cubeVAO, reflectShader, 36);
 
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-            shader.SetUniform4mat("model", model);
-            renderer.Draw(cubeVAO, shader, 36);
+            reflectShader.SetUniform4mat("model", model);
+            renderer.Draw(cubeVAO, reflectShader, 36);
 
             //===================渲染天空盒=========================
             glDepthMask(GL_FALSE);
             skyboxShader.Bind();
-            glm::mat4 skyboxView = glm::mat4(glm::mat3(view));
+            glm::mat4 skyboxView = glm::mat4(glm::mat3(view)); //屏蔽View矩阵的位置向量的影响!
             skyboxShader.SetUniform4mat("view", skyboxView);
             skyboxShader.SetUniform4mat("projection", projection);
             renderer.Draw(skyboxVAO, skyboxShader, 36);
             glDepthMask(GL_TRUE);
             //===================End 渲染天空盒=========================
-            //===================End 第一阶段 离线渲染=====================
-             
 
-            //===================第二阶段 渲染到屏幕=====================
-            fb.UnBind();
-            glDisable(GL_DEPTH_TEST);
-            glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
-
-
-            fb.BindColorTexture(0);
-
-            renderer.Draw(screenVAO, screenShader, 6);
-            //===================End 第二阶段 渲染到屏幕=====================
-
-
-            //End======================================================Draw
+          
             glfwPollEvents();
             glfwSwapBuffers(window);
 
