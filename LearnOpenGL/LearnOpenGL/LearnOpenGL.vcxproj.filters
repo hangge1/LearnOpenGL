@@ -48,6 +48,9 @@
     <ClCompile Include="IndexBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="CubeTexture.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\default.fs" />
@@ -65,6 +68,8 @@
     <None Include="assets\shader\stencil_testing.fs" />
     <None Include="assets\shader\fboRenderShader.fs" />
     <None Include="assets\shader\fboRenderShader.vs" />
+    <None Include="assets\shader\skybox.fs" />
+    <None Include="assets\shader\skybox.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -95,6 +100,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="VertexBufferLayout.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

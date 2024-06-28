@@ -1454,7 +1454,7 @@ glGenRenderbuffers(1, &rbo);
 
 
 
-
+# Day5
 
 
 
@@ -1465,6 +1465,160 @@ glGenRenderbuffers(1, &rbo);
 
 
 例如：反相、灰度化、模糊、锐化、卷积操作等等
+
+
+
+
+
+## 立方体贴图
+
+已经使用2D纹理很长时间。但除此之外仍有更多的纹理类型，立方体贴图(Cube Map)！
+
+立方体贴图就是一个包含了6个2D纹理的纹理，每个2D纹理都组成了立方体的一个面！
+
+立方体贴图有一个非常有用的特性，它可以通过一个**方向向量来进行索引/采样**！
+
+假设我们有一个1x1x1的单位立方体，方向向量的原点位于它的中心。
+
+![image-20240628142435127](Study.assets/image-20240628142435127.png)
+
+
+
+只要立方体的中心位于原点，我们就能使用立方体的实际位置向量来对立方体贴图进行采样！
+
+
+
+
+
+**实操**
+
+1、创建立方体贴图
+
+```
+unsigned int textureID;
+glGenTextures(1, &textureID);
+glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+```
+
+2、设置参数
+
+因为立方体贴图包含有6个纹理，每个面一个，我们需要调用glTexImage2D函数6次。
+
+```
+int width, height, nrChannels;
+unsigned char *data;  
+for(unsigned int i = 0; i < textures_faces.size(); i++)
+{
+    data = stbi_load(textures_faces[i].c_str(), &width, &height, &nrChannels, 0);
+    glTexImage2D(
+        GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 
+        0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+    );
+}
+glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+```
+
+3、片段着色器应用
+
+片段着色器中，使用了一个不同类型的采样器，`samplerCube`
+
+```
+in vec3 textureDir; // 代表3D纹理坐标的方向向量
+uniform samplerCube cubemap; // 立方体贴图的纹理采样器
+
+void main()
+{             
+    FragColor = texture(cubemap, textureDir);
+}
+```
+
+使用立方体贴图的主要目的就是实现**天空盒**！
+
+
+
+
+
+**天空盒**
+
+天空盒是一个包含了整个场景的（大）立方体，它包含周围环境的6个图像，让玩家以为他处在一个比实际大得多的环境当中。
+
+
+
+因为天空盒是作为背景出现的，所以它必须作为渲染的最底下，优先级最低的这种感觉！并且它**不受摄像机的位移向量影响**！
+
+
+
+所以带天空盒的渲染方式：首先渲染天空盒，之后再渲染场景中的其它物体！
+
+这样子能够工作，但不是非常高效，因为：我们就会对屏幕上的每一个像素运行一遍片段着色器，即便只有一小部分的天空盒最终是可见的！
+
+可以使用**提前深度测试(Early Depth Testing)**轻松丢弃掉的片段能够节省我们很多宝贵的带宽！
+
+所以，我们将会**最后渲染天空盒**，以获得轻微的性能提升！
+
+
+
+**那提前深度测试究竟怎么做呢？**
+
+透视除法在顶点着色器运行之后执行，如果我们将位置设置为xyww，通过顶点除法后，所有的z都为1.0f。代表最远的地方！
+
+同时，我们需要修改深度测试函数，GL_LESS改为GL_LEQUAL！
+
+
+
+
+
+
+
+**环境映射**
+
+现在将整个环境映射到了一个纹理对象，能利用这个信息的不仅仅只有天空盒！
+
+通过使用环境的立方体贴图，我们可以给物体**反射**和**折射**的属性。
+
+这样使用环境立方体贴图的技术叫做**环境映射**(Environment Mapping)，其中最流行的两个是反射(Reflection)和折射(Refraction)。
+
+
+
+**反射**
+
+反射这个属性表现为物体（或物体的一部分）反射它周围环境，即根据观察者的视角，物体的颜色或多或少等于它的环境！
+
+**镜子**就是一个反射性物体：它会根据观察者的视角反射它周围的环境。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

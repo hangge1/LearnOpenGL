@@ -24,10 +24,12 @@
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
 
+#include "CubeTexture.h"
+
 float deltaTime = 0.0f; // 当前帧与上一帧的时间差
 float lastFrame = 0.0f; // 上一帧的时间
 
-Camera camera(glm::vec3(0.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -121,6 +123,7 @@ GLFWwindow* InitWindow(int width, int height, const char* title)
 }
 
 
+
 int main()
 {
     const int screenWidth = 800;
@@ -135,7 +138,8 @@ int main()
 
     //启动深度测试
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
+    //glDepthFunc(GL_LESS);
+    glDepthFunc(GL_LEQUAL);
 
 
     float cubeVertices[] = 
@@ -208,6 +212,62 @@ int main()
          1.0f,  1.0f,  1.0f, 1.0f
     };
 
+    std::vector<std::string> faces
+    {
+        "assets/textures/cubeMap/skybox/right.jpg",
+        "assets/textures/cubeMap/skybox/left.jpg",
+        "assets/textures/cubeMap/skybox/top.jpg",
+        "assets/textures/cubeMap/skybox/bottom.jpg",
+        "assets/textures/cubeMap/skybox/front.jpg",
+        "assets/textures/cubeMap/skybox/back.jpg"
+    };
+    
+    float skyboxVertices[] = 
+    {
+        // positions          
+        -1.0f,  1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+
+        -1.0f,  1.0f, -1.0f,
+         1.0f,  1.0f, -1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f,  1.0f
+    };
+
     {
         //帧缓冲
         unsigned int fbo;
@@ -268,15 +328,23 @@ int main()
         screenLayout.Push<float>(2);
         screenVAO.AddBuffer(screenVBO, screenLayout);
 
+        // skyBox VAO
+        VertexArray skyboxVAO;
+        VertexBuffer skyboxVBO(skyboxVertices, sizeof(skyboxVertices));
+        VertexBufferLayout skyboxLayout;
+        skyboxLayout.Push<float>(3);
+        skyboxVAO.AddBuffer(skyboxVBO, skyboxLayout);
 
         Texture cubeTexture("assets/textures/diffuseMap.png");
         Texture floorTexture("assets/textures/wall.jpg");
+        CubeTexture skyBoxTexture(faces);
 
         cubeTexture.Bind(0);
         floorTexture.Bind(1);
 
         Shader shader("assets/shader/stencil_testing.vs", "assets/shader/stencil_testing.fs");
         Shader screenShader("assets/shader/fboRenderShader.vs", "assets/shader/fboRenderShader.fs");
+        Shader skyboxShader("assets/shader/skybox.vs", "assets/shader/skybox.fs");
 
         Renderer renderer;
 
@@ -284,10 +352,14 @@ int main()
         {
             processInput(window);
 
+            glm::mat4 view = camera.GetViewMatrix();
+            glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
+
+            
 
             //===================第一阶段 离线渲染=====================
-            glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-            glEnable(GL_DEPTH_TEST);
+            //glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+            //glEnable(GL_DEPTH_TEST);
 
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             glClearDepth(1.0);
@@ -295,12 +367,9 @@ int main()
 
             //======================================================Draw
             glm::mat4 model(1.0f);
-            glm::mat4 view = camera.GetViewMatrix();
-            glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
-
 
             //========绘制轮廓========
-            //1、绘制地板
+            ////1、绘制地板
             floorTexture.Bind();
             shader.Bind();
             shader.SetUniform4mat("view", view);
@@ -319,18 +388,29 @@ int main()
             model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
             shader.SetUniform4mat("model", model);
             renderer.Draw(cubeVAO, shader, 36);
+
+            //===================渲染天空盒=========================
+            glDepthMask(GL_FALSE);
+            skyBoxTexture.Bind();
+            skyboxShader.Bind();
+            glm::mat4 skyboxView = glm::mat4(glm::mat3(view));
+            skyboxShader.SetUniform4mat("view", skyboxView);
+            skyboxShader.SetUniform4mat("projection", projection);
+            renderer.Draw(skyboxVAO, skyboxShader, 36);
+            glDepthMask(GL_TRUE);
+            //===================End 渲染天空盒=========================
             //===================End 第一阶段 离线渲染=====================
              
 
             //===================第二阶段 渲染到屏幕=====================
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);  
+            /*glBindFramebuffer(GL_FRAMEBUFFER, 0);  
             glDisable(GL_DEPTH_TEST);
             glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
 
             glBindTexture(GL_TEXTURE_2D, colorTexture);
-            renderer.Draw(screenVAO, screenShader, 6);
+            renderer.Draw(screenVAO, screenShader, 6);*/
             //===================End 第二阶段 渲染到屏幕=====================
 
 

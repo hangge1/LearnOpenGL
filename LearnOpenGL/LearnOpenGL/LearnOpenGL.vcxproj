@@ -163,6 +163,7 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CubeTexture.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -184,6 +185,8 @@
     <None Include="assets\shader\modelShader.vs" />
     <None Include="assets\shader\objectShader.fs" />
     <None Include="assets\shader\objectShader.vs" />
+    <None Include="assets\shader\skybox.fs" />
+    <None Include="assets\shader\skybox.vs" />
     <None Include="assets\shader\stencil_single_color.fs" />
     <None Include="assets\shader\stencil_testing.fs" />
     <None Include="assets\shader\stencil_testing.vs" />
@@ -192,6 +195,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CubeTexture.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
