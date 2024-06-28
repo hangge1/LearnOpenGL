@@ -20,6 +20,10 @@
 
 #include "Model.h"
 
+#include "VertexArray.h"
+#include "VertexBuffer.h"
+#include "VertexBufferLayout.h"
+
 float deltaTime = 0.0f; // 当前帧与上一帧的时间差
 float lastFrame = 0.0f; // 上一帧的时间
 
@@ -118,9 +122,9 @@ int main()
     glDepthFunc(GL_LESS);
 
     //设置面剔除(默认是逆时针正向，剔除背面)
-    glEnable(GL_CULL_FACE);
+    /*glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
-    glCullFace(GL_BACK);
+    glCullFace(GL_BACK);*/
 
     float cubeVertices[] = 
     {
@@ -180,99 +184,82 @@ int main()
          5.0f, -0.5f, -5.0f,  2.0f, 2.0f
     };
 
-    std::vector<glm::vec3> vegetation;
-    vegetation.push_back(glm::vec3(-1.5f, 0.0f, -0.48f));
-    vegetation.push_back(glm::vec3(1.5f, 0.0f, 0.51f));
-    vegetation.push_back(glm::vec3(0.0f, 0.0f, 0.7f));
-    vegetation.push_back(glm::vec3(-0.3f, 0.0f, -2.3f));
-    vegetation.push_back(glm::vec3(0.5f, 0.0f, -0.6f));
-
-    // cube VAO
-    unsigned int cubeVAO, cubeVBO;
-    glGenVertexArrays(1, &cubeVAO);
-    glGenBuffers(1, &cubeVBO);
-    glBindVertexArray(cubeVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glBindVertexArray(0);
-    // plane VAO
-    unsigned int planeVAO, planeVBO;
-    glGenVertexArrays(1, &planeVAO);
-    glGenBuffers(1, &planeVBO);
-    glBindVertexArray(planeVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glBindVertexArray(0);
-
-
-    Texture cubeTexture("assets/textures/diffuseMap.png");
-    Texture floorTexture("assets/textures/wall.jpg");
-
-    cubeTexture.Bind(0);
-    floorTexture.Bind(1);
-
-
-    Shader shader("assets/shader/stencil_testing.vs", "assets/shader/stencil_testing.fs");
-
-    while (!glfwWindowShouldClose(window)) //渲染循环
     {
-        processInput(window);
+        // cube VAO
+        VertexArray cubeVAO;
+        VertexBuffer cubeVBO(cubeVertices, sizeof(cubeVertices));
+        VertexBufferLayout cubeLayout;
+        cubeLayout.Push<float>(3);
+        cubeLayout.Push<float>(2);
+        cubeVAO.AddBuffer(cubeVBO, cubeLayout);
 
-        //Clear
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClearDepth(1.0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // plane VAO
+        VertexArray planeVAO;
+        VertexBuffer planeVBO(planeVertices, sizeof(planeVertices));
+        VertexBufferLayout planeLayout;
+        planeLayout.Push<float>(3);
+        planeLayout.Push<float>(2);
+        planeVAO.AddBuffer(planeVBO, planeLayout);
 
-        //======================================================Draw
 
-        glm::mat4 model(1.0f);
-        glm::mat4 view = camera.GetViewMatrix();
-        glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
+        Texture cubeTexture("assets/textures/diffuseMap.png");
+        Texture floorTexture("assets/textures/wall.jpg");
 
-        shader.Bind();
-        shader.SetUniform4mat("view", view);
-        shader.SetUniform4mat("projection", projection);
+        cubeTexture.Bind(0);
+        floorTexture.Bind(1);
 
-        //========绘制轮廓========
+        Shader shader("assets/shader/stencil_testing.vs", "assets/shader/stencil_testing.fs");
 
-        //1、绘制地板
-        glBindVertexArray(planeVAO);
-        floorTexture.Bind();
-        shader.SetUniform4mat("model", glm::mat4(1.0f));
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        glBindVertexArray(0);
+        Renderer renderer;
 
-        //2、绘制立方体
-        glBindVertexArray(cubeVAO);
-        glActiveTexture(GL_TEXTURE0);
-        cubeTexture.Bind();
-        model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-        shader.SetUniform4mat("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-        shader.SetUniform4mat("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        while (!glfwWindowShouldClose(window)) //渲染循环
+        {
+            processInput(window);
 
-        
+            //Clear
+            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+            glClearDepth(1.0);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //End======================================================Draw
-        glfwPollEvents();
-        glfwSwapBuffers(window);
+            //======================================================Draw
+            glm::mat4 model(1.0f);
+            glm::mat4 view = camera.GetViewMatrix();
+            glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
 
-        float currentFrame = (float)glfwGetTime();
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
+
+
+            //========绘制轮廓========
+            //1、绘制地板
+            floorTexture.Bind();
+            shader.Bind();
+            shader.SetUniform4mat("view", view);
+            shader.SetUniform4mat("projection", projection);
+            shader.SetUniform4mat("model", glm::mat4(1.0f));
+            renderer.Draw(planeVAO, shader, 6);
+
+
+            //2、绘制立方体
+            cubeTexture.Bind();
+            model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
+            shader.SetUniform4mat("model", model);
+            renderer.Draw(cubeVAO, shader, 36);
+
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
+            shader.SetUniform4mat("model", model);
+            renderer.Draw(cubeVAO, shader, 36);
+
+
+
+            //End======================================================Draw
+            glfwPollEvents();
+            glfwSwapBuffers(window);
+
+            float currentFrame = (float)glfwGetTime();
+            deltaTime = currentFrame - lastFrame;
+            lastFrame = currentFrame;
+        }
     }
-
 
     glfwTerminate();
     return 0;
