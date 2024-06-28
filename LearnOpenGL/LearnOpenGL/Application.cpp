@@ -48,7 +48,23 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
         glfwSetWindowShouldClose(window, true);
+        return;
+    }
+    if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
+    {
+        // 设置为线框模式
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        return;
+    }
+    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
+    {
+        //切换成填充模式
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        return;
+    }
+
 
     int mode = 0;
 
@@ -107,8 +123,8 @@ GLFWwindow* InitWindow(int width, int height, const char* title)
 
 int main()
 {
-    int screenWidth = 800;
-    int screenHeight = 600;
+    const int screenWidth = 800;
+    const int screenHeight = 600;
 
     GLFWwindow* window = InitWindow(screenWidth, screenHeight, "Hello World");
     if (window == nullptr)
@@ -121,10 +137,6 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    //设置面剔除(默认是逆时针正向，剔除背面)
-    /*glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CCW);
-    glCullFace(GL_BACK);*/
 
     float cubeVertices[] = 
     {
@@ -184,7 +196,54 @@ int main()
          5.0f, -0.5f, -5.0f,  2.0f, 2.0f
     };
 
+    float screenVertices[] =
     {
+        // positions   // texCoords
+        -1.0f,  1.0f,  0.0f, 1.0f,
+        -1.0f, -1.0f,  0.0f, 0.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+
+        -1.0f,  1.0f,  0.0f, 1.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f, 1.0f
+    };
+
+    {
+        //帧缓冲
+        unsigned int fbo;
+        glGenFramebuffers(1, &fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        //绑定颜色纹理附件
+        unsigned int colorTexture;
+        glGenTextures(1, &colorTexture);
+        glBindTexture(GL_TEXTURE_2D, colorTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screenWidth, screenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture, 0);
+        //绑定深度和模板缓冲附件
+        //法1: 纹理附件
+        /*unsigned int depthStencilTexture;
+        glGenTextures(1, &depthStencilTexture);
+        glBindTexture(GL_TEXTURE_2D, depthStencilTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, 800, 600, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthStencilTexture, 0);*/
+        //法2: 渲染缓冲对象附件
+        unsigned int rbo;
+        glGenRenderbuffers(1, &rbo);
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        {
+            std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+            return -1;
+        }
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+
         // cube VAO
         VertexArray cubeVAO;
         VertexBuffer cubeVBO(cubeVertices, sizeof(cubeVertices));
@@ -201,6 +260,14 @@ int main()
         planeLayout.Push<float>(2);
         planeVAO.AddBuffer(planeVBO, planeLayout);
 
+        // screen VAO
+        VertexArray screenVAO;
+        VertexBuffer screenVBO(screenVertices, sizeof(screenVertices));
+        VertexBufferLayout screenLayout;
+        screenLayout.Push<float>(2);
+        screenLayout.Push<float>(2);
+        screenVAO.AddBuffer(screenVBO, screenLayout);
+
 
         Texture cubeTexture("assets/textures/diffuseMap.png");
         Texture floorTexture("assets/textures/wall.jpg");
@@ -209,6 +276,7 @@ int main()
         floorTexture.Bind(1);
 
         Shader shader("assets/shader/stencil_testing.vs", "assets/shader/stencil_testing.fs");
+        Shader screenShader("assets/shader/fboRenderShader.vs", "assets/shader/fboRenderShader.fs");
 
         Renderer renderer;
 
@@ -216,7 +284,11 @@ int main()
         {
             processInput(window);
 
-            //Clear
+
+            //===================第一阶段 离线渲染=====================
+            glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+            glEnable(GL_DEPTH_TEST);
+
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             glClearDepth(1.0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -225,7 +297,6 @@ int main()
             glm::mat4 model(1.0f);
             glm::mat4 view = camera.GetViewMatrix();
             glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
-
 
 
             //========绘制轮廓========
@@ -248,7 +319,19 @@ int main()
             model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
             shader.SetUniform4mat("model", model);
             renderer.Draw(cubeVAO, shader, 36);
+            //===================End 第一阶段 离线渲染=====================
+             
 
+            //===================第二阶段 渲染到屏幕=====================
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);  
+            glDisable(GL_DEPTH_TEST);
+            glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+
+
+            glBindTexture(GL_TEXTURE_2D, colorTexture);
+            renderer.Draw(screenVAO, screenShader, 6);
+            //===================End 第二阶段 渲染到屏幕=====================
 
 
             //End======================================================Draw

@@ -63,6 +63,8 @@
     <None Include="assets\shader\stencil_testing.vs" />
     <None Include="assets\shader\stencil_single_color.fs" />
     <None Include="assets\shader\stencil_testing.fs" />
+    <None Include="assets\shader\fboRenderShader.fs" />
+    <None Include="assets\shader\fboRenderShader.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
