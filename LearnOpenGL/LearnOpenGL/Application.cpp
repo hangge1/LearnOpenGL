@@ -26,6 +26,8 @@
 
 #include "CubeTexture.h"
 
+#include "FrameBuffer.h"
+
 float deltaTime = 0.0f; // 当前帧与上一帧的时间差
 float lastFrame = 0.0f; // 上一帧的时间
 
@@ -269,39 +271,7 @@ int main()
     };
 
     {
-        //帧缓冲
-        unsigned int fbo;
-        glGenFramebuffers(1, &fbo);
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-        //绑定颜色纹理附件
-        unsigned int colorTexture;
-        glGenTextures(1, &colorTexture);
-        glBindTexture(GL_TEXTURE_2D, colorTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screenWidth, screenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture, 0);
-        //绑定深度和模板缓冲附件
-        //法1: 纹理附件
-        /*unsigned int depthStencilTexture;
-        glGenTextures(1, &depthStencilTexture);
-        glBindTexture(GL_TEXTURE_2D, depthStencilTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, 800, 600, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthStencilTexture, 0);*/
-        //法2: 渲染缓冲对象附件
-        unsigned int rbo;
-        glGenRenderbuffers(1, &rbo);
-        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-        glBindRenderbuffer(GL_RENDERBUFFER, 0);
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        {
-            std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-            return -1;
-        }
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+        FrameBuffer fb(screenWidth, screenHeight);
 
 
         // cube VAO
@@ -341,10 +311,15 @@ int main()
 
         cubeTexture.Bind(0);
         floorTexture.Bind(1);
+        skyBoxTexture.Bind(2);
 
         Shader shader("assets/shader/stencil_testing.vs", "assets/shader/stencil_testing.fs");
         Shader screenShader("assets/shader/fboRenderShader.vs", "assets/shader/fboRenderShader.fs");
         Shader skyboxShader("assets/shader/skybox.vs", "assets/shader/skybox.fs");
+        skyboxShader.Bind();
+        skyboxShader.SetUniform1i("skybox", 2);
+
+        Shader reflectShader("assets/shader/reflectShader.vs", "assets/shader/reflectShader.fs");
 
         Renderer renderer;
 
@@ -358,8 +333,8 @@ int main()
             
 
             //===================第一阶段 离线渲染=====================
-            //glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-            //glEnable(GL_DEPTH_TEST);
+            fb.Bind();
+            glEnable(GL_DEPTH_TEST);
 
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             glClearDepth(1.0);
@@ -370,8 +345,8 @@ int main()
 
             //========绘制轮廓========
             ////1、绘制地板
-            floorTexture.Bind();
             shader.Bind();
+            shader.SetUniform1i("texture1", 1);
             shader.SetUniform4mat("view", view);
             shader.SetUniform4mat("projection", projection);
             shader.SetUniform4mat("model", glm::mat4(1.0f));
@@ -379,7 +354,8 @@ int main()
 
 
             //2、绘制立方体
-            cubeTexture.Bind();
+            shader.Bind();
+            shader.SetUniform1i("texture1", 0);
             model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
             shader.SetUniform4mat("model", model);
             renderer.Draw(cubeVAO, shader, 36);
@@ -391,7 +367,6 @@ int main()
 
             //===================渲染天空盒=========================
             glDepthMask(GL_FALSE);
-            skyBoxTexture.Bind();
             skyboxShader.Bind();
             glm::mat4 skyboxView = glm::mat4(glm::mat3(view));
             skyboxShader.SetUniform4mat("view", skyboxView);
@@ -403,14 +378,15 @@ int main()
              
 
             //===================第二阶段 渲染到屏幕=====================
-            /*glBindFramebuffer(GL_FRAMEBUFFER, 0);  
+            fb.UnBind();
             glDisable(GL_DEPTH_TEST);
             glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
 
-            glBindTexture(GL_TEXTURE_2D, colorTexture);
-            renderer.Draw(screenVAO, screenShader, 6);*/
+            fb.BindColorTexture(0);
+
+            renderer.Draw(screenVAO, screenShader, 6);
             //===================End 第二阶段 渲染到屏幕=====================
 
 

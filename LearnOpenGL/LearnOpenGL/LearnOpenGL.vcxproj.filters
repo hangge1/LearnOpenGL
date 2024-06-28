@@ -51,6 +51,9 @@
     <ClCompile Include="CubeTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="FrameBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\default.fs" />
@@ -70,6 +73,8 @@
     <None Include="assets\shader\fboRenderShader.vs" />
     <None Include="assets\shader\skybox.fs" />
     <None Include="assets\shader\skybox.vs" />
+    <None Include="assets\shader\reflectShader.fs" />
+    <None Include="assets\shader\reflectShader.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -103,6 +108,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="CubeTexture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
