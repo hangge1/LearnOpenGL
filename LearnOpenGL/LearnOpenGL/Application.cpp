@@ -376,7 +376,7 @@ int main()
             shader.SetUniform4mat("projection", projection);
 
 
-            glDrawArrays(GL_POINTS, 0, 36);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
           
             glfwPollEvents();
             glfwSwapBuffers(window);

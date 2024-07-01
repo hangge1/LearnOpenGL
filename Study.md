@@ -1757,6 +1757,8 @@ glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, sizeof(vert
     - z分量等于对应片段的深度值
 - gl_FrontFacing（输入）
     - 如果当前片段是正向面的一部分那么就是`true`，否则就是`false`
+- gl_FragDepth（输出）
+    - 设置片段的深度值
 
 
 
@@ -1764,11 +1766,54 @@ glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, sizeof(vert
 
 
 
+### 接口块
 
+目前为止，从顶点着色器向片段着色器发送数据，都是定义n个in/out 同名变量实现。当程序更大时，可能发送的数据就很多，就希望发送类似结构体或数组的变量，GLSL给我们提供了叫做接口块的东西，有点类似struct！
 
+如下：
 
+顶点着色器
 
+```glsl
+#version 330 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 aTexCoords;
 
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+//=======================接口块
+out VS_OUT
+{
+    vec2 TexCoords;
+} vs_out;
+//=======================接口块
+void main()
+{
+    gl_Position = projection * view * model * vec4(aPos, 1.0);    
+    vs_out.TexCoords = aTexCoords;
+} 
+```
+
+片段着色器
+
+```glsl
+#version 330 core
+out vec4 FragColor;
+//=======================接口块
+in VS_OUT
+{
+    vec2 TexCoords;
+} fs_in;
+//=======================接口块
+uniform sampler2D texture;
+
+void main()
+{             
+    FragColor = texture(texture, fs_in.TexCoords);   
+}
+```
 
 
 
