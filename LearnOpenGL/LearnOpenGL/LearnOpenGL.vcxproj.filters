@@ -84,6 +84,7 @@
     <None Include="assets\shader\testgeometryShader.fs" />
     <None Include="assets\shader\testgeometryShader.gs" />
     <None Include="assets\shader\testgeometryShader.vs" />
+    <None Include="assets\shader\explodeGeometryShader.gs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">

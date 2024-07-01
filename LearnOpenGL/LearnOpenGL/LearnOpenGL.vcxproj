@@ -179,6 +179,7 @@
     <None Include="assets\shader\blueShader.fs" />
     <None Include="assets\shader\default.fs" />
     <None Include="assets\shader\default.vs" />
+    <None Include="assets\shader\explodeGeometryShader.gs" />
     <None Include="assets\shader\fboRenderShader.fs" />
     <None Include="assets\shader\fboRenderShader.vs" />
     <None Include="assets\shader\greenShader.fs" />
