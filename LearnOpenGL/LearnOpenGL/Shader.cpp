@@ -127,3 +127,15 @@ void Shader::SetUniform4mat(const std::string& name, const glm::mat4& v) const
     }
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(v));
 }
+
+unsigned int Shader::GetUniformBlockIndex(const std::string& block_name) const
+{
+    return glGetUniformBlockIndex(m_ID, block_name.c_str());
+}
+
+void Shader::SetUniformBlockBinding(const std::string& block_name, unsigned int bindIndex) const
+{
+    unsigned int index = GetUniformBlockIndex(block_name);
+
+    glUniformBlockBinding(m_ID, index, bindIndex);
+}

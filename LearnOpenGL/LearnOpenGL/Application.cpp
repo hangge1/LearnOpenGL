@@ -318,44 +318,53 @@ int main()
 
 
 
-    unsigned int vboA = 0;
-    glGenBuffers(1, &vboA);
-    glBindBuffer(GL_ARRAY_BUFFER, vboA);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cubePositionVertices) + sizeof(cubeNormalVertices), 0, GL_DYNAMIC_DRAW);
-    //拷贝数据
-    //法1：
-    GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(cubePositionVertices), cubePositionVertices));
-    GLCall(glBufferSubData(GL_ARRAY_BUFFER, sizeof(cubePositionVertices), sizeof(cubeNormalVertices), cubeNormalVertices));
-    //法2：
-    /*void* ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-    memcpy(ptr, cubeVertices, sizeof(cubeVertices));
-    glUnmapBuffer(GL_ARRAY_BUFFER);*/
-
-    unsigned int vboB = 0;
-    glGenBuffers(1, &vboB);
-    glBindBuffer(GL_ARRAY_BUFFER, vboB);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cubePositionVertices) + sizeof(cubeNormalVertices), 0, GL_DYNAMIC_DRAW);
-
-    //将vboA-->拷贝到vboB
-    glBindBuffer(GL_COPY_READ_BUFFER, vboA);
-    glBindBuffer(GL_COPY_WRITE_BUFFER, vboB);
-    glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, sizeof(cubePositionVertices) + sizeof(cubeNormalVertices));
+    VertexBuffer cube_vb(cubePositionVertices, sizeof(cubePositionVertices));
+    VertexArray cube_va;
+    VertexBufferLayout cube_layout;
+    cube_layout.Push<float>(3);
+    cube_va.AddBuffer(cube_vb, cube_layout);
 
 
-    unsigned int vao = 0;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vboB);
+    Shader redcube_shader("assets/shader/uniformBlockShader.vs", "assets/shader/redShader.fs");
+    Shader greencube_shader("assets/shader/uniformBlockShader.vs", "assets/shader/greenShader.fs");
+    Shader bluecube_shader("assets/shader/uniformBlockShader.vs", "assets/shader/blueShader.fs");
 
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)(0));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)(sizeof(cubePositionVertices)));
 
-    Shader shader("assets/shader/testShader.vs", "assets/shader/testShader.fs");
+    //设置Uniform块绑定点
+    redcube_shader.SetUniformBlockBinding("Matrices", 0);
+    greencube_shader.SetUniformBlockBinding("Matrices", 0);
+    bluecube_shader.SetUniformBlockBinding("Matrices", 0);
+
+    //创建Uniform缓冲
+    unsigned int uboMatrices;
+    glGenBuffers(1, &uboMatrices);
+
+    glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+    glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    //Uniform缓冲绑定到绑定点0
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboMatrices);
 
     {
         Renderer renderer;
+
+        glm::mat4 model[3] = 
+        {
+            glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)),
+            glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+            glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
+        };
+
+        redcube_shader.Bind();
+        redcube_shader.SetUniform4mat("model", model[0]);
+        greencube_shader.Bind();
+        greencube_shader.SetUniform4mat("model", model[1]);
+        bluecube_shader.Bind();
+        bluecube_shader.SetUniform4mat("model", model[2]);
+
+
+
 
         while (!glfwWindowShouldClose(window)) //渲染循环
         {
@@ -365,18 +374,21 @@ int main()
             glClearDepth(1.0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            glm::mat4 model(1.0f);
+            
             glm::mat4 view = camera.GetViewMatrix();
             glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
 
             //========Draw========
-            shader.Bind();
-            shader.SetUniform4mat("model", model);
-            shader.SetUniform4mat("view", view);
-            shader.SetUniform4mat("projection", projection);
+            //拷贝数据
+            glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+            glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
+            glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
+            glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+            renderer.Draw(cube_va, redcube_shader, 36);
+            renderer.Draw(cube_va, greencube_shader, 36);
+            renderer.Draw(cube_va, bluecube_shader, 36);
           
             glfwPollEvents();
             glfwSwapBuffers(window);

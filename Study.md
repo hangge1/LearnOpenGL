@@ -1817,19 +1817,34 @@ void main()
 
 
 
+必须满足接口块的名字相同即可，示例变量名不需要相同！
 
 
 
 
 
+### Uniform缓冲对象
+
+当我们使用多于1个的着色器时，我们发现多个着色器有一部分Uniform变量的设置是完全相同的，尤其是View和Project矩阵，但是我们还是需要针对不同的Shader进行重复的设置。
+
+为了解决这个问题，OpenGL提供了Uniform缓冲对象，允许定义一系列在多个着色器程序中相同的全局Uniform变量，当使用Uniform缓冲对象的时候，我们只需要设置相关的uniform**一次**。
 
 
 
+1、**Uniform缓冲对象**是一个缓冲，使用glGenBuffers创建，绑定到GL_UNIFORM_BUFFER缓冲目标，并将所有相关的uniform数据存入缓冲
 
+2、**Uniform块布局**告诉OpenGL内存的哪一部分对应着着色器中的哪一个uniform变量
 
+- 共享布局
+- std140
+- packed布局
 
+3、**绑定点**，让OpenGL知道哪个Uniform缓冲对应哪个Uniform块
 
-
+- glGetUniformBlockIndex 获取Uniform块索引
+- glUniformBlockBinding 设置Uniform块的绑定点
+- 创建GL_UNIFORM_BUFFER缓冲对象
+- UNIFORM缓冲对象绑定到Uniform块
 
 
 

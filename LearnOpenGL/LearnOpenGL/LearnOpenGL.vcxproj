@@ -176,16 +176,19 @@
     <ClCompile Include="VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\shader\blueShader.fs" />
     <None Include="assets\shader\default.fs" />
     <None Include="assets\shader\default.vs" />
     <None Include="assets\shader\fboRenderShader.fs" />
     <None Include="assets\shader\fboRenderShader.vs" />
+    <None Include="assets\shader\greenShader.fs" />
     <None Include="assets\shader\lightShader.fs" />
     <None Include="assets\shader\lightShader.vs" />
     <None Include="assets\shader\modelShader.fs" />
     <None Include="assets\shader\modelShader.vs" />
     <None Include="assets\shader\objectShader.fs" />
     <None Include="assets\shader\objectShader.vs" />
+    <None Include="assets\shader\redShader.fs" />
     <None Include="assets\shader\reflectShader.fs" />
     <None Include="assets\shader\reflectShader.vs" />
     <None Include="assets\shader\skybox.fs" />
@@ -195,6 +198,7 @@
     <None Include="assets\shader\stencil_testing.vs" />
     <None Include="assets\shader\testShader.fs" />
     <None Include="assets\shader\testShader.vs" />
+    <None Include="assets\shader\uniformBlockShader.vs" />
     <None Include="shader\default.fs" />
     <None Include="shader\default.vs" />
   </ItemGroup>

@@ -22,4 +22,7 @@ public:
 	void SetUniform1f(const std::string& name, float v) const;
 	void SetUniform3f(const std::string& name, const glm::vec3 v) const;
 	void SetUniform4mat(const std::string& name, const glm::mat4& v) const;
+
+	unsigned int GetUniformBlockIndex(const std::string& block_name) const;
+	void SetUniformBlockBinding(const std::string& block_name, unsigned int bindIndex) const;
 };
