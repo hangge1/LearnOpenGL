@@ -149,15 +149,16 @@ int main()
 
     float pointVertices[] =
     {
-        -0.5f, 0.5f, 0.0,
-        -0.5f,-0.5f, 0.0,
-         0.5f, 0.5f, 0.0,
-         0.5f,-0.5f, 0.0
+        -0.5f, 0.5f, 0.0, 1.0f, 0.0f, 0.0f, 
+        -0.5f,-0.5f, 0.0, 0.0f, 1.0f, 0.0f,
+         0.5f, 0.5f, 0.0, 0.0f, 0.0f, 1.0f,
+         0.5f,-0.5f, 0.0, 1.0f, 1.0f, 0.0f
     };
 
 
     VertexBuffer vb(pointVertices, sizeof(pointVertices));
     VertexBufferLayout layout;
+    layout.Push<float>(3);
     layout.Push<float>(3);
     VertexArray va;
     va.AddBuffer(vb, layout);
