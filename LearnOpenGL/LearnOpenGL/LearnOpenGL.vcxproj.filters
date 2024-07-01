@@ -75,6 +75,8 @@
     <None Include="assets\shader\skybox.vs" />
     <None Include="assets\shader\reflectShader.fs" />
     <None Include="assets\shader\reflectShader.vs" />
+    <None Include="assets\shader\testShader.fs" />
+    <None Include="assets\shader\testShader.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">

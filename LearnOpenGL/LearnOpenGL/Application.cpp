@@ -144,49 +144,94 @@ int main()
     glDepthFunc(GL_LEQUAL);
 
 
-    float cubeVertices[] = 
+    float cubePositionVertices[] = 
     {
-    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+        -0.5f, -0.5f, -0.5f,
+         0.5f, -0.5f, -0.5f,
+         0.5f,  0.5f, -0.5f,
+         0.5f,  0.5f, -0.5f,
+        -0.5f,  0.5f, -0.5f,
+        -0.5f, -0.5f, -0.5f,
+                           
+        -0.5f, -0.5f,  0.5f,
+         0.5f, -0.5f,  0.5f,
+         0.5f,  0.5f,  0.5f,
+         0.5f,  0.5f,  0.5f,
+        -0.5f,  0.5f,  0.5f,
+        -0.5f, -0.5f,  0.5f,
+                           
+        -0.5f,  0.5f,  0.5f,
+        -0.5f,  0.5f, -0.5f,
+        -0.5f, -0.5f, -0.5f,
+        -0.5f, -0.5f, -0.5f,
+        -0.5f, -0.5f,  0.5f,
+        -0.5f,  0.5f,  0.5f,
+                           
+         0.5f,  0.5f,  0.5f,
+         0.5f,  0.5f, -0.5f,
+         0.5f, -0.5f, -0.5f,
+         0.5f, -0.5f, -0.5f,
+         0.5f, -0.5f,  0.5f,
+         0.5f,  0.5f,  0.5f,
+                           
+        -0.5f, -0.5f, -0.5f,
+         0.5f, -0.5f, -0.5f,
+         0.5f, -0.5f,  0.5f,
+         0.5f, -0.5f,  0.5f,
+        -0.5f, -0.5f,  0.5f,
+        -0.5f, -0.5f, -0.5f,
+                           
+        -0.5f,  0.5f, -0.5f,
+         0.5f,  0.5f, -0.5f,
+         0.5f,  0.5f,  0.5f,
+         0.5f,  0.5f,  0.5f,
+        -0.5f,  0.5f,  0.5f,
+        -0.5f,  0.5f, -0.5f
+    };
 
-    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+    float cubeNormalVertices[] =
+    {
+          0.0f,  0.0f, -1.0f,
+          0.0f,  0.0f, -1.0f,
+          0.0f,  0.0f, -1.0f,
+          0.0f,  0.0f, -1.0f,
+          0.0f,  0.0f, -1.0f,
+          0.0f,  0.0f, -1.0f,
 
-    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+          0.0f,  0.0f, 1.0f,
+          0.0f,  0.0f, 1.0f,
+          0.0f,  0.0f, 1.0f,
+          0.0f,  0.0f, 1.0f,
+          0.0f,  0.0f, 1.0f,
+          0.0f,  0.0f, 1.0f,
 
-     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+         -1.0f,  0.0f,  0.0f,
+         -1.0f,  0.0f,  0.0f,
+         -1.0f,  0.0f,  0.0f,
+         -1.0f,  0.0f,  0.0f,
+         -1.0f,  0.0f,  0.0f,
+         -1.0f,  0.0f,  0.0f,
 
-    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+          1.0f,  0.0f,  0.0f,
+          1.0f,  0.0f,  0.0f,
+          1.0f,  0.0f,  0.0f,
+          1.0f,  0.0f,  0.0f,
+          1.0f,  0.0f,  0.0f,
+          1.0f,  0.0f,  0.0f,
 
-    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+          0.0f, -1.0f,  0.0f,
+          0.0f, -1.0f,  0.0f,
+          0.0f, -1.0f,  0.0f,
+          0.0f, -1.0f,  0.0f,
+          0.0f, -1.0f,  0.0f,
+          0.0f, -1.0f,  0.0f,
+
+          0.0f,  1.0f,  0.0f,
+          0.0f,  1.0f,  0.0f,
+          0.0f,  1.0f,  0.0f,
+          0.0f,  1.0f,  0.0f,
+          0.0f,  1.0f,  0.0f,
+          0.0f,  1.0f,  0.0f
     };
 
     float planeVertices[] = 
@@ -269,47 +314,35 @@ int main()
          1.0f, -1.0f,  1.0f
     };
 
+
+
+
+    unsigned int vbo = 0;
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubePositionVertices) + sizeof(cubeNormalVertices), 0, GL_DYNAMIC_DRAW);
+    //拷贝数据
+    //法1：
+    GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(cubePositionVertices), cubePositionVertices));
+    GLCall(glBufferSubData(GL_ARRAY_BUFFER, sizeof(cubePositionVertices), sizeof(cubeNormalVertices), cubeNormalVertices));
+    //法2：
+    /*void* ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+    memcpy(ptr, cubeVertices, sizeof(cubeVertices));
+    glUnmapBuffer(GL_ARRAY_BUFFER);*/
+
+    unsigned int vao = 0;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)(0));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)(sizeof(cubePositionVertices)));
+
+    Shader shader("assets/shader/testShader.vs", "assets/shader/testShader.fs");
+
     {
-        // cube VAO
-        VertexArray cubeVAO;
-        VertexBuffer cubeVBO(cubeVertices, sizeof(cubeVertices));
-        VertexBufferLayout cubeLayout;
-        cubeLayout.Push<float>(3);
-        cubeLayout.Push<float>(3);
-        cubeVAO.AddBuffer(cubeVBO, cubeLayout);
-
-        // plane VAO
-        VertexArray planeVAO;
-        VertexBuffer planeVBO(planeVertices, sizeof(planeVertices));
-        VertexBufferLayout planeLayout;
-        planeLayout.Push<float>(3);
-        planeLayout.Push<float>(2);
-        planeVAO.AddBuffer(planeVBO, planeLayout);
-
-        // skyBox VAO
-        VertexArray skyboxVAO;
-        VertexBuffer skyboxVBO(skyboxVertices, sizeof(skyboxVertices));
-        VertexBufferLayout skyboxLayout;
-        skyboxLayout.Push<float>(3);
-        skyboxVAO.AddBuffer(skyboxVBO, skyboxLayout);
-
-        Texture cubeTexture("assets/textures/diffuseMap.png");
-        Texture floorTexture("assets/textures/wall.jpg");
-        CubeTexture skyBoxTexture(faces);
-
-        cubeTexture.Bind(0);
-        floorTexture.Bind(1);
-        skyBoxTexture.Bind(2);
-
-        Shader shader("assets/shader/stencil_testing.vs", "assets/shader/stencil_testing.fs");
-        Shader skyboxShader("assets/shader/skybox.vs", "assets/shader/skybox.fs");
-        skyboxShader.Bind();
-        skyboxShader.SetUniform1i("skybox", 2);
-
-        Shader reflectShader("assets/shader/reflectShader.vs", "assets/shader/reflectShader.fs");
-        reflectShader.Bind();
-        reflectShader.SetUniform1i("skybox", 2);
-
         Renderer renderer;
 
         while (!glfwWindowShouldClose(window)) //渲染循环
@@ -324,39 +357,14 @@ int main()
             glm::mat4 view = camera.GetViewMatrix();
             glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
 
-            //========绘制轮廓========
-            ////1、绘制地板
+            //========Draw========
             shader.Bind();
-            shader.SetUniform1i("texture1", 1);
+            shader.SetUniform4mat("model", model);
             shader.SetUniform4mat("view", view);
             shader.SetUniform4mat("projection", projection);
-            shader.SetUniform4mat("model", glm::mat4(1.0f));
-            renderer.Draw(planeVAO, shader, 6);
 
-            //2、绘制立方体
-            reflectShader.Bind();
-            reflectShader.SetUniform3f("cameraPos", camera.GetPos());
-            model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-            reflectShader.SetUniform4mat("model", model);
-            reflectShader.SetUniform4mat("view", view);
-            reflectShader.SetUniform4mat("projection", projection);
-            renderer.Draw(cubeVAO, reflectShader, 36);
 
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-            reflectShader.SetUniform4mat("model", model);
-            renderer.Draw(cubeVAO, reflectShader, 36);
-
-            //===================渲染天空盒=========================
-            glDepthMask(GL_FALSE);
-            skyboxShader.Bind();
-            glm::mat4 skyboxView = glm::mat4(glm::mat3(view)); //屏蔽View矩阵的位置向量的影响!
-            skyboxShader.SetUniform4mat("view", skyboxView);
-            skyboxShader.SetUniform4mat("projection", projection);
-            renderer.Draw(skyboxVAO, skyboxShader, 36);
-            glDepthMask(GL_TRUE);
-            //===================End 渲染天空盒=========================
-
+            glDrawArrays(GL_TRIANGLES, 0, 36);
           
             glfwPollEvents();
             glfwSwapBuffers(window);

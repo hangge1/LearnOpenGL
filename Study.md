@@ -1631,7 +1631,55 @@ void main()
 
 
 
-## 高级数据
+# Day7
+
+**动态顶点数据填充**
+
+之前所有的顶点数据，都是通过调用`glBufferData`一次性向显卡申请内存并拷贝数据过去。这就是静态填充方式
+
+如果这部分数据频繁需要更新，或者只需要更新部分局部的数据，这样做就大大浪费了带宽！
+
+**那么如何实现动态更新呢？**
+
+（1）先调用`glBufferData`预分配显存
+
+（2）
+
+法1：调用`glBufferSubData`动态更新
+
+法2：glMapBuffer + memcpy + glUnmapBuffer
+
+例如：
+
+```c++
+loat data[] = {
+  0.5f, 1.0f, -0.35f
+  ...
+};
+glBindBuffer(GL_ARRAY_BUFFER, buffer);
+// 获取指针
+void *ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+// 复制数据到内存
+memcpy(ptr, data, sizeof(data));
+// 记得告诉OpenGL我们不再需要这个指针了
+glUnmapBuffer(GL_ARRAY_BUFFER);
+```
+
+
+
+**了解Batch InterLeave布局和Batch SingleLeave布局**
+
+将每一个顶点的位置、法线和/或纹理坐标紧密放置在一起，这就是交错布局（InterLeave），如：123123123这种方式。
+
+但是其实，通常我们从文件加载顶点数据的时候：位置数据、法线数据、纹理坐标数据都是单独存储的。
+
+这样其实用111122223333这样存储方式，就不需要多一个步骤，将他们整理正123123123的形式！
+
+我们完全可以`glBufferSubData`接口，将这些1111、2222、3333按序拷贝至缓冲区！
+
+
+
+> 注意：设置顶点属性，需要拷贝最后一个参数：offset偏移量！
 
 
 
@@ -1639,7 +1687,38 @@ void main()
 
 
 
+**复制缓冲**
 
+当缓冲区已经填充好数据之后，有可能会想与其他缓冲共享其中的数据，或者将部分数据复制到另一个缓冲的需求。
+
+`glCopyBufferSubData`接口，让我们能够容易的从一个缓冲中复制数据到另一个缓冲中，函数原型如下：
+
+`void glCopyBufferSubData(GLenum readtarget, GLenum writetarget, `
+
+``GLintptr readoffset, GLintptr writeoffset, GLsizeiptr size);`
+
+- readtarget 源缓冲目标
+- writetarget 目标缓冲目标
+- readoffset 源起始偏移量
+- writeoffset 目标起始偏移量
+- size 拷贝字节大小
+
+
+
+如果源和目标的缓冲目标不一样，当然可以很容易的实现。但是如果两个缓冲类型都一样怎么办呢？
+
+不能同时将两个缓冲绑定到同一个缓冲目标上。
+
+OpenGL提供给我们另外两个缓冲目标，叫做`GL_COPY_READ_BUFFER`和`GL_COPY_WRITE_BUFFER`
+
+所以就需要先绑定到这两个缓冲目标，然后再调用`glCopyBufferSubData`接口，进行拷贝，如下：
+
+```
+float vertexData[] = { ... };
+glBindBuffer(GL_COPY_READ_BUFFER, vbo1);
+glBindBuffer(GL_COPY_WRITE_BUFFER, vbo2);
+glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, sizeof(vertexData));
+```
 
 
 
