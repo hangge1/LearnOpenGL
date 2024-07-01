@@ -15,4 +15,5 @@ void main()
     vec4 pos = model * vec4(aPos, 1.0f);
     Position = vec3(pos);
     gl_Position = projection * view * pos;
+    gl_PointSize = gl_Position.z;    
 }

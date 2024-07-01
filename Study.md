@@ -1724,6 +1724,74 @@ glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, sizeof(vert
 
 
 
+## 高级GLSL
+
+**GLSL内建变量**
+
+
+
+**顶点着色器内建变量**
+
+- gl_Position（输出）
+
+    - 不用多说，顶点着色器的输出
+
+- glPointSize（输出）
+
+    - 图元GL_POINTS的点大小，设置点的像素宽高
+
+- gl_VertexID（输入）
+
+    - 正在绘制顶点的当前ID；
+    - 当使用glDrawElements索引渲染，存储正在绘制顶点的当前索引；
+    - 当使用glDrawArrays进行绘制的时候，储存从渲染调用开始的已处理顶点数量。
+
+    
+
+
+
+**片段着色器内建变量**
+
+- gl_FragCoord（输入）
+    - x和y分量是片段的窗口空间坐标
+    - z分量等于对应片段的深度值
+- gl_FrontFacing（输入）
+    - 如果当前片段是正向面的一部分那么就是`true`，否则就是`false`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

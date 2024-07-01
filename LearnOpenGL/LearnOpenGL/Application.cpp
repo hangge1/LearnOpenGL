@@ -142,6 +142,7 @@ int main()
     glEnable(GL_DEPTH_TEST);
     //glDepthFunc(GL_LESS);
     glDepthFunc(GL_LEQUAL);
+    glEnable(GL_PROGRAM_POINT_SIZE);
 
 
     float cubePositionVertices[] = 
@@ -375,7 +376,7 @@ int main()
             shader.SetUniform4mat("projection", projection);
 
 
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+            glDrawArrays(GL_POINTS, 0, 36);
           
             glfwPollEvents();
             glfwSwapBuffers(window);
