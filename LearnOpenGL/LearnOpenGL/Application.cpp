@@ -317,9 +317,9 @@ int main()
 
 
 
-    unsigned int vbo = 0;
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    unsigned int vboA = 0;
+    glGenBuffers(1, &vboA);
+    glBindBuffer(GL_ARRAY_BUFFER, vboA);
     glBufferData(GL_ARRAY_BUFFER, sizeof(cubePositionVertices) + sizeof(cubeNormalVertices), 0, GL_DYNAMIC_DRAW);
     //拷贝数据
     //法1：
@@ -330,10 +330,21 @@ int main()
     memcpy(ptr, cubeVertices, sizeof(cubeVertices));
     glUnmapBuffer(GL_ARRAY_BUFFER);*/
 
+    unsigned int vboB = 0;
+    glGenBuffers(1, &vboB);
+    glBindBuffer(GL_ARRAY_BUFFER, vboB);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubePositionVertices) + sizeof(cubeNormalVertices), 0, GL_DYNAMIC_DRAW);
+
+    //将vboA-->拷贝到vboB
+    glBindBuffer(GL_COPY_READ_BUFFER, vboA);
+    glBindBuffer(GL_COPY_WRITE_BUFFER, vboB);
+    glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, sizeof(cubePositionVertices) + sizeof(cubeNormalVertices));
+
+
     unsigned int vao = 0;
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vboB);
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)(0));
