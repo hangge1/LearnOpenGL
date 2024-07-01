@@ -1917,6 +1917,48 @@ in gl_Vertex
 
 
 
+类似，通过几何着色器，可以实现：**爆破**效果、**法线可视化**等等功能！
+
+
+
+
+
+### 实例化（Instancing）
+
+假设有一个绘制很多模型的场景，大部分的模型包含的是同一组顶点数据，只不过进行的是不同的世界空间变换。
+
+想象一个充满草的场景：每根草都是一个包含几个三角形的小模型。
+
+如果我们需要渲染大量物体时，代码看起来会像这样：
+
+```
+for(unsigned int i = 0; i < amount_of_models_to_draw; i++)
+{
+    DoSomePreparations(); // 绑定VAO，绑定纹理，设置uniform等
+    glDrawArrays(GL_TRIANGLES, 0, amount_of_vertices);
+}
+```
+
+这种多少个物体，就调用多少次DrawCall，在这种情况下往往是很难接受的！
+
+**实例化**这项技术能够让我们使用一个渲染调用来绘制多个物体，来节省每次绘制物体时CPU -> GPU的通信，它只需要一次即可！
+
+如果想使用实例化渲染，只需要将glDrawArrays和glDrawElements的渲染调用分别改为**glDrawArraysInstanced**和**glDrawElementsInstanced**就可以！
+
+这些渲染函数的**实例化**版本需要一个额外的参数，叫做**实例数量**(Instance Count)！
+
+
+
+注意！GLSL在顶点着色器中嵌入了另一个内建变量，**gl_InstanceID**，gl_InstanceID会从0开始，在每个实例被渲染时递增1！
+
+因为每个实例都有唯一的ID，我们可以建立一个数组，将ID与位置值对应起来，将每个实例放置在世界的不同位置。
+
+
+
+
+
+
+
 
 
 
