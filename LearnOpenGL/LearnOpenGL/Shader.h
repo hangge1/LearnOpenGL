@@ -12,6 +12,7 @@ private:
 
 public:
 	Shader(const std::string& vs_path, const std::string& fs_path);
+	Shader(const std::string& vs_path, const std::string& fs_path, const std::string& gs_path);
 	~Shader();
 	Shader(const Shader&) = delete;
 	Shader&  operator=(const Shader&) = delete;

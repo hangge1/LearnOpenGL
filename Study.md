@@ -1850,6 +1850,129 @@ void main()
 
 
 
+### 几何着色器
+
+顶点和片段着色器之间有一个**可选**的**几何着色器**！
+
+几何着色器的**输入**是一个图元（如点或三角形）的一组顶点！在顶点发送到下一着色器阶段之前对它们随意变换！
+
+几何着色器最有趣的地方在于，它能够将（这一组）顶点**变换为完全不同的图元**，并且还能**生成比原来更多的顶点**！
+
+
+
+**直接看例子：**
+
+```glsl
+#version 330 core
+layout (points) in;
+layout (line_strip, max_vertices = 2) out;
+
+void main() {    
+    gl_Position = gl_in[0].gl_Position + vec4(-0.1, 0.0, 0.0, 0.0); 
+    EmitVertex();
+
+    gl_Position = gl_in[0].gl_Position + vec4( 0.1, 0.0, 0.0, 0.0);
+    EmitVertex();
+
+    EndPrimitive();
+}
+```
+
+**in关键字**前声明一个布局修饰符，从顶点着色器接收下列任何一个图元值：
+
+- points
+- lines
+- lines_adjacency
+- triangles
+- triangles_adjacency
+
+
+
+**out关键字**指定几何着色器输出的图元类型，如下：
+
+- points
+- line_strip
+- triangle_strip
+
+
+
+EmitVertex()表示添加当前图元的顶点，EndPrimitive（）添加图元
+
+
+
+我们需要某种方式来获取前一着色器阶段的输出，GLSL提供给我们一个内建(Built-in)变量：
+
+内部看起来是这样的：
+
+```glsl
+in gl_Vertex
+{
+    vec4  gl_Position;
+    float gl_PointSize;
+    float gl_ClipDistance[];
+} gl_in[];
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -145,226 +145,27 @@ int main()
     glEnable(GL_PROGRAM_POINT_SIZE);
 
 
-    float cubePositionVertices[] = 
+
+
+    float pointVertices[] =
     {
-        -0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-                           
-        -0.5f, -0.5f,  0.5f,
-         0.5f, -0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
-                           
-        -0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-                           
-         0.5f,  0.5f,  0.5f,
-         0.5f,  0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-                           
-        -0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f,  0.5f,
-         0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f, -0.5f,
-                           
-        -0.5f,  0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-         0.5f,  0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f, -0.5f
-    };
-
-    float cubeNormalVertices[] =
-    {
-          0.0f,  0.0f, -1.0f,
-          0.0f,  0.0f, -1.0f,
-          0.0f,  0.0f, -1.0f,
-          0.0f,  0.0f, -1.0f,
-          0.0f,  0.0f, -1.0f,
-          0.0f,  0.0f, -1.0f,
-
-          0.0f,  0.0f, 1.0f,
-          0.0f,  0.0f, 1.0f,
-          0.0f,  0.0f, 1.0f,
-          0.0f,  0.0f, 1.0f,
-          0.0f,  0.0f, 1.0f,
-          0.0f,  0.0f, 1.0f,
-
-         -1.0f,  0.0f,  0.0f,
-         -1.0f,  0.0f,  0.0f,
-         -1.0f,  0.0f,  0.0f,
-         -1.0f,  0.0f,  0.0f,
-         -1.0f,  0.0f,  0.0f,
-         -1.0f,  0.0f,  0.0f,
-
-          1.0f,  0.0f,  0.0f,
-          1.0f,  0.0f,  0.0f,
-          1.0f,  0.0f,  0.0f,
-          1.0f,  0.0f,  0.0f,
-          1.0f,  0.0f,  0.0f,
-          1.0f,  0.0f,  0.0f,
-
-          0.0f, -1.0f,  0.0f,
-          0.0f, -1.0f,  0.0f,
-          0.0f, -1.0f,  0.0f,
-          0.0f, -1.0f,  0.0f,
-          0.0f, -1.0f,  0.0f,
-          0.0f, -1.0f,  0.0f,
-
-          0.0f,  1.0f,  0.0f,
-          0.0f,  1.0f,  0.0f,
-          0.0f,  1.0f,  0.0f,
-          0.0f,  1.0f,  0.0f,
-          0.0f,  1.0f,  0.0f,
-          0.0f,  1.0f,  0.0f
-    };
-
-    float planeVertices[] = 
-    {
-        // positions          // texture Coords (note we set these higher than 1 (together with GL_REPEAT as texture wrapping mode). this will cause the floor texture to repeat)
-         5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-        -5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
-        -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
-
-         5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-        -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
-         5.0f, -0.5f, -5.0f,  2.0f, 2.0f
-    };
-
-    float screenVertices[] =
-    {
-        // positions   // texCoords
-        -1.0f,  1.0f,  0.0f, 1.0f,
-        -1.0f, -1.0f,  0.0f, 0.0f,
-         1.0f, -1.0f,  1.0f, 0.0f,
-
-        -1.0f,  1.0f,  0.0f, 1.0f,
-         1.0f, -1.0f,  1.0f, 0.0f,
-         1.0f,  1.0f,  1.0f, 1.0f
-    };
-
-    std::vector<std::string> faces
-    {
-        "assets/textures/cubeMap/skybox/right.jpg",
-        "assets/textures/cubeMap/skybox/left.jpg",
-        "assets/textures/cubeMap/skybox/top.jpg",
-        "assets/textures/cubeMap/skybox/bottom.jpg",
-        "assets/textures/cubeMap/skybox/front.jpg",
-        "assets/textures/cubeMap/skybox/back.jpg"
-    };
-    
-    float skyboxVertices[] = 
-    {
-        // positions          
-        -1.0f,  1.0f, -1.0f,
-        -1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-
-        -1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
-
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-
-        -1.0f, -1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
-
-        -1.0f,  1.0f, -1.0f,
-         1.0f,  1.0f, -1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f, -1.0f,
-
-        -1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,
-         1.0f, -1.0f,  1.0f
+        -0.5f, 0.5f, 0.0,
+        -0.5f,-0.5f, 0.0,
+         0.5f, 0.5f, 0.0,
+         0.5f,-0.5f, 0.0
     };
 
 
+    VertexBuffer vb(pointVertices, sizeof(pointVertices));
+    VertexBufferLayout layout;
+    layout.Push<float>(3);
+    VertexArray va;
+    va.AddBuffer(vb, layout);
 
-
-    VertexBuffer cube_vb(cubePositionVertices, sizeof(cubePositionVertices));
-    VertexArray cube_va;
-    VertexBufferLayout cube_layout;
-    cube_layout.Push<float>(3);
-    cube_va.AddBuffer(cube_vb, cube_layout);
-
-
-    Shader redcube_shader("assets/shader/uniformBlockShader.vs", "assets/shader/redShader.fs");
-    Shader greencube_shader("assets/shader/uniformBlockShader.vs", "assets/shader/greenShader.fs");
-    Shader bluecube_shader("assets/shader/uniformBlockShader.vs", "assets/shader/blueShader.fs");
-
-
-    //设置Uniform块绑定点
-    redcube_shader.SetUniformBlockBinding("Matrices", 0);
-    greencube_shader.SetUniformBlockBinding("Matrices", 0);
-    bluecube_shader.SetUniformBlockBinding("Matrices", 0);
-
-    //创建Uniform缓冲
-    unsigned int uboMatrices;
-    glGenBuffers(1, &uboMatrices);
-
-    glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-    glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-    //Uniform缓冲绑定到绑定点0
-    glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboMatrices);
+    Shader geoShader("assets/shader/testgeometryShader.vs", "assets/shader/testgeometryShader.fs", "assets/shader/testgeometryShader.gs");
 
     {
         Renderer renderer;
-
-        glm::mat4 model[3] = 
-        {
-            glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)),
-            glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
-            glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
-        };
-
-        redcube_shader.Bind();
-        redcube_shader.SetUniform4mat("model", model[0]);
-        greencube_shader.Bind();
-        greencube_shader.SetUniform4mat("model", model[1]);
-        bluecube_shader.Bind();
-        bluecube_shader.SetUniform4mat("model", model[2]);
-
-
-
 
         while (!glfwWindowShouldClose(window)) //渲染循环
         {
@@ -374,22 +175,21 @@ int main()
             glClearDepth(1.0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            
+            glm::mat4 model(1.0f);
             glm::mat4 view = camera.GetViewMatrix();
             glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
 
             //========Draw========
-            //拷贝数据
-            glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-            glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
-            glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
-            glBindBuffer(GL_UNIFORM_BUFFER, 0);
+            geoShader.Bind();
+            geoShader.SetUniform4mat("model", model);
+            geoShader.SetUniform4mat("view", view);
+            geoShader.SetUniform4mat("projection", projection);
+
+            va.Bind();
+
+            glDrawArrays(GL_POINTS, 0, 4);
 
 
-            renderer.Draw(cube_va, redcube_shader, 36);
-            renderer.Draw(cube_va, greencube_shader, 36);
-            renderer.Draw(cube_va, bluecube_shader, 36);
-          
             glfwPollEvents();
             glfwSwapBuffers(window);
 

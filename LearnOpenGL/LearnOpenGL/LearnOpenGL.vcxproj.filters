@@ -81,6 +81,9 @@
     <None Include="assets\shader\greenShader.fs" />
     <None Include="assets\shader\redShader.fs" />
     <None Include="assets\shader\uniformBlockShader.vs" />
+    <None Include="assets\shader\testgeometryShader.fs" />
+    <None Include="assets\shader\testgeometryShader.gs" />
+    <None Include="assets\shader\testgeometryShader.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
