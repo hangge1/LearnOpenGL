@@ -144,14 +144,14 @@ void display(Shader& shader, VertexArray& va,  float deltaTime)
     glClearDepth(1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //rotateAngle += step;
+    rotateAngle += step;
 
     for (size_t i = 0; i < 16; i++)
     {
         //1 Å·À­Ðý×ª
         //glm::mat4 model = glm::rotate(glm::mat4(1.0f),glm::radians(rotateAngle), glm::vec3(0.0f, 0.0f, 1.0f));
 
-        glm::mat4 model_move = glm::translate(glm::mat4(1.0f), glm::vec3(sin(i), 10 * cos(0.5 * i), 20 * sin(10 * i)));
+        glm::mat4 model_move = glm::translate(glm::mat4(1.0f), glm::vec3(sin(i), 5 * cos(0.5 * i), 8 * sin(10 * i)));
 
         glm::mat4 model_scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.2, 0.2, 0.2));
 
