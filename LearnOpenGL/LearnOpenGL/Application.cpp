@@ -144,23 +144,29 @@ void display(Shader& shader, VertexArray& va,  float deltaTime)
     glClearDepth(1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    //rotateAngle += step;
 
-    rotateAngle += step;
+    for (size_t i = 0; i < 16; i++)
+    {
+        //1 欧拉旋转
+        //glm::mat4 model = glm::rotate(glm::mat4(1.0f),glm::radians(rotateAngle), glm::vec3(0.0f, 0.0f, 1.0f));
 
-    //1 欧拉旋转
-    //glm::mat4 model = glm::rotate(glm::mat4(1.0f),glm::radians(rotateAngle), glm::vec3(0.0f, 0.0f, 1.0f));
-    
-    //2 四元数旋转
-    glm::mat4 model = glm::toMat4(glm::angleAxis(glm::radians(rotateAngle), glm::vec3(0.0f, 0.0f, 1.0f)));
-    //glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 project = glm::perspective(glm::radians(45.0f), (float)screenWidth / screenHeight, 0.1f, 1000.0f);
+        glm::mat4 model_move = glm::translate(glm::mat4(1.0f), glm::vec3(sin(i), 10 * cos(0.5 * i), 20 * sin(10 * i)));
 
-    shader.Bind();
-    shader.SetUniform4mat("model", model);
-    shader.SetUniform4mat("view", camera.GetViewMatrix());
-    shader.SetUniform4mat("project", project);
+        glm::mat4 model_scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.2, 0.2, 0.2));
 
-    renderer.Draw(va, shader, 36);
+        //2 四元数旋转
+        glm::mat4 model = model_move * model_scale * glm::toMat4(glm::angleAxis(glm::radians(rotateAngle), glm::vec3(glm::vec3(sin(i), cos(i), sin(5 * i)))));
+        //glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::mat4 project = glm::perspective(glm::radians(45.0f), (float)screenWidth / screenHeight, 0.1f, 1000.0f);
+
+        shader.Bind();
+        shader.SetUniform4mat("model", model);
+        shader.SetUniform4mat("view", camera.GetViewMatrix());
+        shader.SetUniform4mat("project", project);
+
+        renderer.Draw(va, shader, 36);
+    }
 }
 
 int main()
