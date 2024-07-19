@@ -12,9 +12,11 @@
 
 #include "Texture.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"
 #include "gtc/type_ptr.hpp"
+#include "gtx/quaternion.hpp"
 
 #include "Camera.h"
 
@@ -28,6 +30,8 @@
 
 #include "FrameBuffer.h"
 
+int screenWidth = 800;
+int screenHeight = 600;
 float deltaTime = 0.0f; // 当前帧与上一帧的时间差
 float lastFrame = 0.0f; // 上一帧的时间
 
@@ -36,6 +40,8 @@ Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
+    screenWidth = width;
+    screenHeight = height;
     glViewport(0, 0, width, height);
 }
 
@@ -101,6 +107,8 @@ GLFWwindow* InitWindow(int width, int height, const char* title)
     }
     glfwMakeContextCurrent(window);
 
+    glfwSwapInterval(1);
+
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
@@ -115,22 +123,48 @@ GLFWwindow* InitWindow(int width, int height, const char* title)
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     //隐藏光标，捕捉
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    glfwSetCursorPosCallback(window, mouse_callback);
+    //glfwSetCursorPosCallback(window, mouse_callback);
 
-    glfwSetScrollCallback(window, scroll_callback);
+    //glfwSetScrollCallback(window, scroll_callback);
 
     return window;
 }
 
 
+void display(Shader& shader, VertexArray& va,  float deltaTime)
+{  
+    static float rotateAngle = 0.0f;
+    static float step = 2.0f;
+
+    Renderer renderer;
+
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClearDepth(1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+    rotateAngle += step;
+
+    //1 欧拉旋转
+    //glm::mat4 model = glm::rotate(glm::mat4(1.0f),glm::radians(rotateAngle), glm::vec3(0.0f, 0.0f, 1.0f));
+    
+    //2 四元数旋转
+    glm::mat4 model = glm::toMat4(glm::angleAxis(glm::radians(rotateAngle), glm::vec3(0.0f, 0.0f, 1.0f)));
+    glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 project = glm::perspective(glm::radians(45.0f), (float)screenWidth / screenHeight, 0.1f, 1000.0f);
+
+    shader.Bind();
+    shader.SetUniform4mat("model", model);
+    shader.SetUniform4mat("view", view);
+    shader.SetUniform4mat("project", project);
+
+    renderer.Draw(va, shader, 3);
+}
 
 int main()
 {
-    const int screenWidth = 800;
-    const int screenHeight = 600;
-
     GLFWwindow* window = InitWindow(screenWidth, screenHeight, "Hello World");
     if (window == nullptr)
     {
@@ -150,70 +184,29 @@ int main()
 
     float quadVertices[] = 
     {
-        // 位置          // 颜色
-        -0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
-         0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
-        -0.05f, -0.05f,  0.0f, 0.0f, 1.0f,
-
-        -0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
-         0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
-         0.05f,  0.05f,  0.0f, 1.0f, 1.0f
+        // 位置        
+        -0.5f, -0.5f, -5.0f,
+         0.5f, -0.5f, -5.0f,
+         0.0f,  0.5f, -5.0f
     };
 
-    Shader instanceShader("assets/shader/instanceShader.vs", "assets/shader/instanceShader.fs");
+    Shader shader("assets/shader/testShader.vs", "assets/shader/testShader.fs");
 
-    glm::vec2 translations[100];
-    int index = 0;
-    float offset = 0.1f;
-    for (int y = -10; y < 10; y += 2)
-    {
-        for (int x = -10; x < 10; x += 2)
-        {
-            glm::vec2 translation;
-            translation.x = (float)x / 10.0f + offset;
-            translation.y = (float)y / 10.0f + offset;
-            translations[index++] = translation;
-        }
-    }
 
     VertexBuffer vb(quadVertices, sizeof(quadVertices));
     VertexBufferLayout layout;
-    layout.Push<float>(2);
     layout.Push<float>(3);
 
     VertexArray va;
     va.AddBuffer(vb, layout);
     va.Bind();
 
-    VertexBuffer OffsetVbo(translations, sizeof(translations));
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-    glVertexAttribDivisor(2, 1);
-
     {
-        Renderer renderer;
-
         while (!glfwWindowShouldClose(window)) //渲染循环
         {
             processInput(window);
- 
-            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-            glClearDepth(1.0);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            glm::mat4 model(1.0f);
-            glm::mat4 view = camera.GetViewMatrix();
-            glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
-
-            //========Draw========
-            instanceShader.Bind();
-            instanceShader.SetUniform4mat("model", model);
-            instanceShader.SetUniform4mat("view", view);
-            instanceShader.SetUniform4mat("projection", projection);
-
-            
-            //renderer.Draw(va, instanceShader, 6);
-            renderer.DrawInstanced(va, instanceShader, 6, 100);
+            display(shader, va, deltaTime);
 
             glfwPollEvents();
             glfwSwapBuffers(window);
