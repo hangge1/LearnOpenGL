@@ -35,7 +35,7 @@ int screenHeight = 600;
 float deltaTime = 0.0f; // 当前帧与上一帧的时间差
 float lastFrame = 0.0f; // 上一帧的时间
 
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -123,11 +123,11 @@ GLFWwindow* InitWindow(int width, int height, const char* title)
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     //隐藏光标，捕捉
-    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    //glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
 
-    //glfwSetScrollCallback(window, scroll_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
     return window;
 }
@@ -152,15 +152,15 @@ void display(Shader& shader, VertexArray& va,  float deltaTime)
     
     //2 四元数旋转
     glm::mat4 model = glm::toMat4(glm::angleAxis(glm::radians(rotateAngle), glm::vec3(0.0f, 0.0f, 1.0f)));
-    glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    //glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 project = glm::perspective(glm::radians(45.0f), (float)screenWidth / screenHeight, 0.1f, 1000.0f);
 
     shader.Bind();
     shader.SetUniform4mat("model", model);
-    shader.SetUniform4mat("view", view);
+    shader.SetUniform4mat("view", camera.GetViewMatrix());
     shader.SetUniform4mat("project", project);
 
-    renderer.Draw(va, shader, 3);
+    renderer.Draw(va, shader, 36);
 }
 
 int main()
@@ -182,18 +182,49 @@ int main()
     glEnable(GL_MULTISAMPLE);
 
 
-    float quadVertices[] = 
-    {
-        // 位置        
-        -0.5f, -0.5f, -5.0f,
-         0.5f, -0.5f, -5.0f,
-         0.0f,  0.5f, -5.0f
+    float vertexPositions[108] = {
+        -1.0f,  1.0f, -1.0f, 
+        -1.0f, -1.0f, -1.0f, 
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f, 
+         1.0f,  1.0f, -1.0f, 
+        -1.0f,  1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f, 
+         1.0f, -1.0f,  1.0f, 
+         1.0f,  1.0f, -1.0f,
+         1.0f, -1.0f,  1.0f, 
+         1.0f,  1.0f,  1.0f, 
+         1.0f,  1.0f, -1.0f,
+         1.0f, -1.0f,  1.0f, 
+        -1.0f, -1.0f,  1.0f, 
+         1.0f,  1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f, 
+        -1.0f,  1.0f,  1.0f, 
+         1.0f,  1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f, 
+        -1.0f, -1.0f, -1.0f, 
+        -1.0f,  1.0f,  1.0f,
+        -1.0f, -1.0f, -1.0f, 
+        -1.0f,  1.0f, -1.0f, 
+        -1.0f,  1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f, 
+         1.0f, -1.0f,  1.0f, 
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f, 
+        -1.0f, -1.0f, -1.0f, 
+        -1.0f, -1.0f,  1.0f,
+        -1.0f,  1.0f, -1.0f, 
+         1.0f,  1.0f, -1.0f, 
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f, 
+        -1.0f,  1.0f,  1.0f, 
+        -1.0f,  1.0f, -1.0f
     };
 
     Shader shader("assets/shader/testShader.vs", "assets/shader/testShader.fs");
 
 
-    VertexBuffer vb(quadVertices, sizeof(quadVertices));
+    VertexBuffer vb(vertexPositions, sizeof(vertexPositions));
     VertexBufferLayout layout;
     layout.Push<float>(3);
 
