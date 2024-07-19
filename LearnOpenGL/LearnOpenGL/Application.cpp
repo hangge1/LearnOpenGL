@@ -37,12 +37,14 @@ float deltaTime = 0.0f; // 当前帧与上一帧的时间差
 float lastFrame = 0.0f; // 上一帧的时间
 
 Camera camera(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
+glm::mat4 project = glm::perspective(glm::radians(45.0f), (float)screenWidth / screenHeight, 0.1f, 1000.0f);
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     screenWidth = width;
     screenHeight = height;
+    project = glm::perspective(glm::radians(45.0f), (float)screenWidth / screenHeight, 0.1f, 1000.0f);
+
     glViewport(0, 0, width, height);
 }
 
@@ -166,12 +168,10 @@ void display(Shader& shader, VertexArray& va,  float deltaTime)
         shader.SetUniform4mat(ss.str(), model);
     }
 
-    glm::mat4 project = glm::perspective(glm::radians(45.0f), (float)screenWidth / screenHeight, 0.1f, 1000.0f);
-    shader.SetUniform4mat("view", camera.GetViewMatrix());
     shader.SetUniform4mat("project", project);
+    shader.SetUniform4mat("view", camera.GetViewMatrix());
 
     //renderer.Draw(va, shader, 36);
-
     renderer.DrawInstanced(va, shader, 36, 16);
 }
 
@@ -185,6 +185,7 @@ int main()
     }
 
     //启动深度测试
+    glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
     //glDepthFunc(GL_LESS);
     glDepthFunc(GL_LEQUAL);
@@ -234,7 +235,8 @@ int main()
     };
 
     Shader shader("assets/shader/testShader.vs", "assets/shader/testShader.fs");
-
+    shader.Bind();
+    shader.SetUniform4mat("project", project);
 
     VertexBuffer vb(vertexPositions, sizeof(vertexPositions));
     VertexBufferLayout layout;
@@ -247,16 +249,17 @@ int main()
     {
         while (!glfwWindowShouldClose(window)) //渲染循环
         {
+            float currentFrame = (float)glfwGetTime();
+            deltaTime = currentFrame - lastFrame;
+            lastFrame = currentFrame;
+
             processInput(window);
 
             display(shader, va, deltaTime);
 
-            glfwPollEvents();
+            
             glfwSwapBuffers(window);
-
-            float currentFrame = (float)glfwGetTime();
-            deltaTime = currentFrame - lastFrame;
-            lastFrame = currentFrame;
+            glfwPollEvents();
         }
     }
 
