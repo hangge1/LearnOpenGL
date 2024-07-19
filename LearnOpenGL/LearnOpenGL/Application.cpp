@@ -30,6 +30,7 @@
 
 #include "FrameBuffer.h"
 
+
 int screenWidth = 800;
 int screenHeight = 600;
 float deltaTime = 0.0f; // 当前帧与上一帧的时间差
@@ -145,6 +146,7 @@ void display(Shader& shader, VertexArray& va,  float deltaTime)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     rotateAngle += step;
+    shader.Bind();
 
     for (size_t i = 0; i < 16; i++)
     {
@@ -157,16 +159,20 @@ void display(Shader& shader, VertexArray& va,  float deltaTime)
 
         //2 四元数旋转
         glm::mat4 model = model_move * model_scale * glm::toMat4(glm::angleAxis(glm::radians(rotateAngle), glm::vec3(glm::vec3(sin(i), cos(i), sin(5 * i)))));
-        //glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        glm::mat4 project = glm::perspective(glm::radians(45.0f), (float)screenWidth / screenHeight, 0.1f, 1000.0f);
 
-        shader.Bind();
-        shader.SetUniform4mat("model", model);
-        shader.SetUniform4mat("view", camera.GetViewMatrix());
-        shader.SetUniform4mat("project", project);
+        std::stringstream ss;
+        ss << "batchModels[" << i << "]";
 
-        renderer.Draw(va, shader, 36);
+        shader.SetUniform4mat(ss.str(), model);
     }
+
+    glm::mat4 project = glm::perspective(glm::radians(45.0f), (float)screenWidth / screenHeight, 0.1f, 1000.0f);
+    shader.SetUniform4mat("view", camera.GetViewMatrix());
+    shader.SetUniform4mat("project", project);
+
+    //renderer.Draw(va, shader, 36);
+
+    renderer.DrawInstanced(va, shader, 36, 16);
 }
 
 int main()
