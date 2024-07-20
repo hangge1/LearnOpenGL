@@ -1629,9 +1629,154 @@ void main()
 
 
 
-
+# Day6
 
 ## 高级数据
+
+OpenGL中缓冲只是一块儿内存区域的对象，当把缓冲绑定到一个特定缓冲对象的时候，我们就给缓冲赋予了一个特殊的意义！
+
+例如：`GL_ARRAY_BUFFER`、`GL_ELEMENT_ARRAY_BUFFER`
+
+
+
+之前的VBO也好，EBO也好，都是通过`glBufferData`，一次性向显卡申请一批数据，然后把数据全部拷贝进去！
+
+但是这及其不灵活，我们可以申请一块内存区域，一开始不给他拷贝数据，需要往什么位置写数据，就往什么地方写！
+
+
+
+通过`glBufferSubData`就可以实现，它有四个参数：
+
+- 缓冲目标
+- 偏移量
+- 数据大小
+- 数据地址
+
+
+
+法1：
+
+`glBufferSubData(GL_ARRAY_BUFFER, 24, sizeof(data), &data); `
+
+这样我们就可以插入/更新指定区域的缓冲内存空间了！
+
+在调用`glBufferSubData`之前，调用`glBufferData`是必须的！
+
+
+
+法2：
+
+```
+glBindBuffer(GL_ARRAY_BUFFER, buffer);
+// 获取当前绑定缓存buffer的内存地址
+void* ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+// 向缓冲中写入数据
+memcpy(ptr, data, sizeof(data));
+// 完成够别忘了告诉OpenGL我们不再需要它了
+glUnmapBuffer(GL_ARRAY_BUFFER);
+```
+
+
+
+
+
+### 分批处理顶点属性
+
+与交叉布局123123123123不同，我们采取批量方式111122223333！
+
+```
+GLfloat positions[] = { ... };
+GLfloat normals[] = { ... };
+GLfloat tex[] = { ... };
+// 填充缓冲
+glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(positions), &positions);
+glBufferSubData(GL_ARRAY_BUFFER, sizeof(positions), sizeof(normals), &normals);
+glBufferSubData(GL_ARRAY_BUFFER, sizeof(positions) + sizeof(normals), sizeof(tex), &tex);
+```
+
+
+
+更新顶点属性指针来反应这些改变：
+
+```
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);  
+glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)(sizeof(positions)));  
+glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid*)(sizeof(positions) + sizeof(normals)));
+```
+
+
+
+
+
+## 复制缓冲
+
+当缓冲被数据填充以后，你可能打算让其他缓冲能分享这些数据或者打算把缓冲的内容复制到另一个缓冲里。
+
+`void glCopyBufferSubData(GLenum readtarget, GLenum writetarget, `
+
+`GLintptr readoffset, GLintptr writeoffset, GLsizeiptr size);`
+
+
+
+`glCopyBufferSubData`函数从readoffset处读取的size大小数据，写入到writetarget缓冲的writeoffset位置
+
+```
+GLfloat vertexData[] = { ... };
+glBindBuffer(GL_COPY_READ_BUFFER, vbo1);
+glBindBuffer(GL_COPY_WRITE_BUFFER, vbo2);
+glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, sizeof(vertexData));
+```
+
+
+
+```
+GLfloat vertexData[] = { ... };
+glBindBuffer(GL_ARRAY_BUFFER, vbo1);
+glBindBuffer(GL_COPY_WRITE_BUFFER, vbo2);
+glCopyBufferSubData(GL_ARRAY_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, sizeof(vertexData));
+```
+
+
+
+
+
+### 高级GLSL
+
+**GLSL内建变量**
+
+其中两个我们已经打过交道了：`gl_Position`和`gl_FragCoord`
+
+
+
+#### 顶点着色器变量
+
+（1）**gl_Position**
+
+（2）**gl_PointSize**
+
+作用：以像素的方式设置点的高度和宽度，它在着色器中描述每个顶点做为点被绘制出来的大小！
+
+使能：glEnable(GL_PROGRAM_POINT_SIZE);
+
+（3）**gl_VertexID**
+
+
+
+#### 片段着色器变量
+
+（1）**gl_FragCoord**
+
+x和y元素是当前片段的窗口空间坐标，起始处是窗口的左下角，z元素和特定的fragment的深度值相等！
+
+（2）**gl_FrontFacing**
+
+告诉我们当前片段是某个正面的一部分还是背面的一部分。
+
+这样我们就可以实现，**里面和外面使用不同的纹理**
+
+
+
+
 
 
 

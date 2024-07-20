@@ -99,7 +99,7 @@
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);glfw3.lib;opengl32.lib;assimp-vc143-mtd.lib</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>xcopy $(SolutionDir)Dependency\Assimp\$(Configuration)\bin\assimp-vc143-mtd.dll $(TargetDir) /d </Command>
+      <Command>xcopy $(SolutionDir)Dependency\Assimp\$(Configuration)\bin\assimp-vc143-mtd.dll $(SolutionDir)$(Platform)\$(Configuration)\ /d </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -120,7 +120,7 @@
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);glfw3.lib;opengl32.lib;assimp-vc143-mt.lib</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>xcopy $(SolutionDir)Dependency\Assimp\$(Configuration)\bin\assimp-vc143-mt.dll $(TargetDir) /d </Command>
+      <Command>xcopy $(SolutionDir)Dependency\Assimp\$(Configuration)\bin\assimp-vc143-mt.dll $(SolutionDir)$(Platform)\$(Configuration)\ /d </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -136,7 +136,7 @@
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);glfw3.lib;opengl32.lib;assimp-vc143-mtd.lib</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>xcopy $(SolutionDir)Dependency\Assimp\$(Configuration)\bin\assimp-vc143-mtd.dll $(TargetDir) /d </Command>
+      <Command>xcopy $(SolutionDir)Dependency\Assimp\$(Configuration)\bin\assimp-vc143-mtd.dll $(SolutionDir)$(Platform)\$(Configuration)\ /d </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -157,7 +157,7 @@
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);glfw3.lib;opengl32.lib;assimp-vc143-mt.lib</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>xcopy $(SolutionDir)Dependency\Assimp\$(Configuration)\bin\assimp-vc143-mt.dll $(TargetDir) /d </Command>
+      <Command>xcopy $(SolutionDir)Dependency\Assimp\$(Configuration)\bin\assimp-vc143-mt.dll $(SolutionDir)$(Platform)\$(Configuration)\ /d </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
