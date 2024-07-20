@@ -25,8 +25,8 @@
 #include "CubeTexture.h"
 #include "FrameBuffer.h"
 
-float deltaTime = 0.0f; // µ±Ç°Ö¡ÓëÉÏÒ»Ö¡µÄÊ±¼ä²î
-float lastFrame = 0.0f; // ÉÏÒ»Ö¡µÄÊ±¼ä
+float deltaTime = 0.0f; // ï¿½ï¿½Ç°Ö¡ï¿½ï¿½ï¿½ï¿½Ò»Ö¡ï¿½ï¿½Ê±ï¿½ï¿½ï¿½
+float lastFrame = 0.0f; // ï¿½ï¿½Ò»Ö¡ï¿½ï¿½Ê±ï¿½ï¿½
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -55,13 +55,13 @@ void processInput(GLFWwindow* window)
     }
     if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
     {
-        // ÉèÖÃÎªÏß¿òÄ£Ê½
+        // ï¿½ï¿½ï¿½ï¿½Îªï¿½ß¿ï¿½Ä£Ê½
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         return;
     }
     if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
     {
-        //ÇÐ»»³ÉÌî³äÄ£Ê½
+        //ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£Ê½
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         return;
     }
@@ -104,14 +104,14 @@ GLFWwindow* InitWindow(int width, int height, const char* title)
         return nullptr;
     }
 
-    //Êµ¼ÊÉÏÒ²¿É½«ÊÓ¿ÚÉèÖÃÎª±ÈGLFWµÄ´°¿ÚÐ¡
-    //±¾ÖÊ£ºÆÁÄ»¿Õ¼ä±ä»»
+    //Êµï¿½ï¿½ï¿½ï¿½Ò²ï¿½É½ï¿½ï¿½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½GLFWï¿½Ä´ï¿½ï¿½ï¿½Ð¡
+    //ï¿½ï¿½ï¿½Ê£ï¿½ï¿½ï¿½Ä»ï¿½Õ¼ï¿½ä»»
     glViewport(0, 0, width, height);
 
-    //µ±ÓÃ»§¸Ä±ä´°¿ÚµÄ´óÐ¡µÄÊ±ºò£¬ÊÓ¿ÚÒ²Ó¦¸Ã±»µ÷Õû
+    //ï¿½ï¿½ï¿½Ã»ï¿½ï¿½Ä±ä´°ï¿½ÚµÄ´ï¿½Ð¡ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ó¿ï¿½Ò²Ó¦ï¿½Ã±ï¿½ï¿½ï¿½ï¿½ï¿½
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    //Òþ²Ø¹â±ê£¬²¶×½
+    //ï¿½ï¿½ï¿½Ø¹ï¿½ê£¬ï¿½ï¿½×½
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glfwSetCursorPosCallback(window, mouse_callback);
@@ -134,13 +134,17 @@ int main()
         return -1;
     }
 
-    //Æô¶¯Éî¶È²âÊÔ
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È²ï¿½ï¿½ï¿½
     glEnable(GL_DEPTH_TEST);
     //glDepthFunc(GL_LESS);
     glDepthFunc(GL_LEQUAL);
+    glEnable(GL_PROGRAM_POINT_SIZE);
+
+    glfwWindowHint(GLFW_SAMPLES, 4);
+    glEnable(GL_MULTISAMPLE);
 
 
-    float cubeVertices[] = 
+    float quadVertices[] = 
     {
         -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
          0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
@@ -185,132 +189,40 @@ int main()
         -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
     };
 
-    float planeVertices[] = 
+    Shader instanceShader("assets/shader/instanceShader.vs", "assets/shader/instanceShader.fs");
+
+    glm::vec2 translations[100];
+    int index = 0;
+    float offset = 0.1f;
+    for (int y = -10; y < 10; y += 2)
     {
-        // positions          // texture Coords (note we set these higher than 1 (together with GL_REPEAT as texture wrapping mode). this will cause the floor texture to repeat)
-         5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-        -5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
-        -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
+        for (int x = -10; x < 10; x += 2)
+        {
+            glm::vec2 translation;
+            translation.x = (float)x / 10.0f + offset;
+            translation.y = (float)y / 10.0f + offset;
+            translations[index++] = translation;
+        }
+    }
 
-         5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-        -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
-         5.0f, -0.5f, -5.0f,  2.0f, 2.0f
-    };
+    VertexBuffer vb(quadVertices, sizeof(quadVertices));
+    VertexBufferLayout layout;
+    layout.Push<float>(2);
+    layout.Push<float>(3);
 
-    float screenVertices[] =
-    {
-        // positions   // texCoords
-        -1.0f,  1.0f,  0.0f, 1.0f,
-        -1.0f, -1.0f,  0.0f, 0.0f,
-         1.0f, -1.0f,  1.0f, 0.0f,
+    VertexArray va;
+    va.AddBuffer(vb, layout);
+    va.Bind();
 
-        -1.0f,  1.0f,  0.0f, 1.0f,
-         1.0f, -1.0f,  1.0f, 0.0f,
-         1.0f,  1.0f,  1.0f, 1.0f
-    };
-
-    std::vector<std::string> faces
-    {
-        "assets/textures/cubeMap/skybox/right.jpg",
-        "assets/textures/cubeMap/skybox/left.jpg",
-        "assets/textures/cubeMap/skybox/top.jpg",
-        "assets/textures/cubeMap/skybox/bottom.jpg",
-        "assets/textures/cubeMap/skybox/front.jpg",
-        "assets/textures/cubeMap/skybox/back.jpg"
-    };
-    
-    float skyboxVertices[] = 
-    {
-        // positions          
-        -1.0f,  1.0f, -1.0f,
-        -1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-
-        -1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
-
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-
-        -1.0f, -1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
-
-        -1.0f,  1.0f, -1.0f,
-         1.0f,  1.0f, -1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f, -1.0f,
-
-        -1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,
-         1.0f, -1.0f,  1.0f
-    };
+    VertexBuffer OffsetVbo(translations, sizeof(translations));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glVertexAttribDivisor(2, 1);
 
     {
-        // cube VAO
-        VertexArray cubeVAO;
-        VertexBuffer cubeVBO(nullptr, sizeof(cubeVertices), true);
-        VertexBufferLayout cubeLayout;
-        cubeLayout.Push<float>(3);
-        cubeLayout.Push<float>(3);
-        cubeVAO.AddBuffer(cubeVBO, cubeLayout);
-
-        cubeVBO.DynamicWriteData(0, sizeof(cubeVertices), cubeVertices);
-
-        // plane VAO
-        VertexArray planeVAO;
-        VertexBuffer planeVBO(planeVertices, sizeof(planeVertices));
-        VertexBufferLayout planeLayout;
-        planeLayout.Push<float>(3);
-        planeLayout.Push<float>(2);
-        planeVAO.AddBuffer(planeVBO, planeLayout);
-
-        // skyBox VAO
-        VertexArray skyboxVAO;
-        VertexBuffer skyboxVBO(skyboxVertices, sizeof(skyboxVertices));
-        VertexBufferLayout skyboxLayout;
-        skyboxLayout.Push<float>(3);
-        skyboxVAO.AddBuffer(skyboxVBO, skyboxLayout);
-
-        Texture cubeTexture("assets/textures/diffuseMap.png");
-        Texture floorTexture("assets/textures/wall.jpg");
-        CubeTexture skyBoxTexture(faces);
-
-        cubeTexture.Bind(0);
-        floorTexture.Bind(1);
-        skyBoxTexture.Bind(2);
-
-        Shader shader("assets/shader/stencil_testing.vs", "assets/shader/stencil_testing.fs");
-        Shader skyboxShader("assets/shader/skybox.vs", "assets/shader/skybox.fs");
-        skyboxShader.Bind();
-        skyboxShader.SetUniform1i("skybox", 2);
-
-        Shader reflectShader("assets/shader/reflectShader.vs", "assets/shader/reflectShader.fs");
-        reflectShader.Bind();
-        reflectShader.SetUniform1i("skybox", 2);
-
         Renderer renderer;
 
-        while (!glfwWindowShouldClose(window)) //äÖÈ¾Ñ­»·
+        while (!glfwWindowShouldClose(window)) //ï¿½ï¿½È¾Ñ­ï¿½ï¿½
         {
             processInput(window);
  
@@ -322,40 +234,16 @@ int main()
             glm::mat4 view = camera.GetViewMatrix();
             glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
 
-            //========»æÖÆÂÖÀª========
-            ////1¡¢»æÖÆµØ°å
-            shader.Bind();
-            shader.SetUniform1i("texture1", 1);
-            shader.SetUniform4mat("view", view);
-            shader.SetUniform4mat("projection", projection);
-            shader.SetUniform4mat("model", glm::mat4(1.0f));
-            renderer.Draw(planeVAO, shader, 6);
+            //========Draw========
+            instanceShader.Bind();
+            instanceShader.SetUniform4mat("model", model);
+            instanceShader.SetUniform4mat("view", view);
+            instanceShader.SetUniform4mat("projection", projection);
 
-            //2¡¢»æÖÆÁ¢·½Ìå
-            reflectShader.Bind();
-            reflectShader.SetUniform3f("cameraPos", camera.GetPos());
-            model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-            reflectShader.SetUniform4mat("model", model);
-            reflectShader.SetUniform4mat("view", view);
-            reflectShader.SetUniform4mat("projection", projection);
-            renderer.Draw(cubeVAO, reflectShader, 36);
+            
+            //renderer.Draw(va, instanceShader, 6);
+            renderer.DrawInstanced(va, instanceShader, 6, 100);
 
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-            reflectShader.SetUniform4mat("model", model);
-            renderer.Draw(cubeVAO, reflectShader, 36);
-
-            //===================äÖÈ¾Ìì¿ÕºÐ=========================
-            glDepthMask(GL_FALSE);
-            skyboxShader.Bind();
-            glm::mat4 skyboxView = glm::mat4(glm::mat3(view)); //ÆÁ±ÎView¾ØÕóµÄÎ»ÖÃÏòÁ¿µÄÓ°Ïì!
-            skyboxShader.SetUniform4mat("view", skyboxView);
-            skyboxShader.SetUniform4mat("projection", projection);
-            renderer.Draw(skyboxVAO, skyboxShader, 36);
-            glDepthMask(GL_TRUE);
-            //===================End äÖÈ¾Ìì¿ÕºÐ=========================
-
-          
             glfwPollEvents();
             glfwSwapBuffers(window);
 

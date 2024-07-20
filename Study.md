@@ -1631,7 +1631,493 @@ void main()
 
 # Day6
 
-## 高级数据
+# Day7
+
+**动态顶点数据填充**
+
+之前所有的顶点数据，都是通过调用`glBufferData`一次性向显卡申请内存并拷贝数据过去。这就是静态填充方式
+
+如果这部分数据频繁需要更新，或者只需要更新部分局部的数据，这样做就大大浪费了带宽！
+
+**那么如何实现动态更新呢？**
+
+（1）先调用`glBufferData`预分配显存
+
+（2）
+
+法1：调用`glBufferSubData`动态更新
+
+法2：glMapBuffer + memcpy + glUnmapBuffer
+
+例如：
+
+```c++
+loat data[] = {
+  0.5f, 1.0f, -0.35f
+  ...
+};
+glBindBuffer(GL_ARRAY_BUFFER, buffer);
+// 获取指针
+void *ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+// 复制数据到内存
+memcpy(ptr, data, sizeof(data));
+// 记得告诉OpenGL我们不再需要这个指针了
+glUnmapBuffer(GL_ARRAY_BUFFER);
+```
+
+
+
+**了解Batch InterLeave布局和Batch SingleLeave布局**
+
+将每一个顶点的位置、法线和/或纹理坐标紧密放置在一起，这就是交错布局（InterLeave），如：123123123这种方式。
+
+但是其实，通常我们从文件加载顶点数据的时候：位置数据、法线数据、纹理坐标数据都是单独存储的。
+
+这样其实用111122223333这样存储方式，就不需要多一个步骤，将他们整理正123123123的形式！
+
+我们完全可以`glBufferSubData`接口，将这些1111、2222、3333按序拷贝至缓冲区！
+
+
+
+> 注意：设置顶点属性，需要拷贝最后一个参数：offset偏移量！
+
+
+
+
+
+
+
+**复制缓冲**
+
+当缓冲区已经填充好数据之后，有可能会想与其他缓冲共享其中的数据，或者将部分数据复制到另一个缓冲的需求。
+
+`glCopyBufferSubData`接口，让我们能够容易的从一个缓冲中复制数据到另一个缓冲中，函数原型如下：
+
+`void glCopyBufferSubData(GLenum readtarget, GLenum writetarget, `
+
+``GLintptr readoffset, GLintptr writeoffset, GLsizeiptr size);`
+
+- readtarget 源缓冲目标
+- writetarget 目标缓冲目标
+- readoffset 源起始偏移量
+- writeoffset 目标起始偏移量
+- size 拷贝字节大小
+
+
+
+如果源和目标的缓冲目标不一样，当然可以很容易的实现。但是如果两个缓冲类型都一样怎么办呢？
+
+不能同时将两个缓冲绑定到同一个缓冲目标上。
+
+OpenGL提供给我们另外两个缓冲目标，叫做`GL_COPY_READ_BUFFER`和`GL_COPY_WRITE_BUFFER`
+
+所以就需要先绑定到这两个缓冲目标，然后再调用`glCopyBufferSubData`接口，进行拷贝，如下：
+
+```
+float vertexData[] = { ... };
+glBindBuffer(GL_COPY_READ_BUFFER, vbo1);
+glBindBuffer(GL_COPY_WRITE_BUFFER, vbo2);
+glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, sizeof(vertexData));
+```
+
+
+
+
+
+## 高级GLSL
+
+**GLSL内建变量**
+
+
+
+**顶点着色器内建变量**
+
+- gl_Position（输出）
+
+    - 不用多说，顶点着色器的输出
+
+- glPointSize（输出）
+
+    - 图元GL_POINTS的点大小，设置点的像素宽高
+
+- gl_VertexID（输入）
+
+    - 正在绘制顶点的当前ID；
+    - 当使用glDrawElements索引渲染，存储正在绘制顶点的当前索引；
+    - 当使用glDrawArrays进行绘制的时候，储存从渲染调用开始的已处理顶点数量。
+
+    
+
+
+
+**片段着色器内建变量**
+
+- gl_FragCoord（输入）
+    - x和y分量是片段的窗口空间坐标
+    - z分量等于对应片段的深度值
+- gl_FrontFacing（输入）
+    - 如果当前片段是正向面的一部分那么就是`true`，否则就是`false`
+- gl_FragDepth（输出）
+    - 设置片段的深度值
+
+
+
+
+
+
+
+### 接口块
+
+目前为止，从顶点着色器向片段着色器发送数据，都是定义n个in/out 同名变量实现。当程序更大时，可能发送的数据就很多，就希望发送类似结构体或数组的变量，GLSL给我们提供了叫做接口块的东西，有点类似struct！
+
+如下：
+
+顶点着色器
+
+```glsl
+#version 330 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 aTexCoords;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+//=======================接口块
+out VS_OUT
+{
+    vec2 TexCoords;
+} vs_out;
+//=======================接口块
+void main()
+{
+    gl_Position = projection * view * model * vec4(aPos, 1.0);    
+    vs_out.TexCoords = aTexCoords;
+} 
+```
+
+片段着色器
+
+```glsl
+#version 330 core
+out vec4 FragColor;
+//=======================接口块
+in VS_OUT
+{
+    vec2 TexCoords;
+} fs_in;
+//=======================接口块
+uniform sampler2D texture;
+
+void main()
+{             
+    FragColor = texture(texture, fs_in.TexCoords);   
+}
+```
+
+
+
+必须满足接口块的名字相同即可，示例变量名不需要相同！
+
+
+
+
+
+### Uniform缓冲对象
+
+当我们使用多于1个的着色器时，我们发现多个着色器有一部分Uniform变量的设置是完全相同的，尤其是View和Project矩阵，但是我们还是需要针对不同的Shader进行重复的设置。
+
+为了解决这个问题，OpenGL提供了Uniform缓冲对象，允许定义一系列在多个着色器程序中相同的全局Uniform变量，当使用Uniform缓冲对象的时候，我们只需要设置相关的uniform**一次**。
+
+
+
+1、**Uniform缓冲对象**是一个缓冲，使用glGenBuffers创建，绑定到GL_UNIFORM_BUFFER缓冲目标，并将所有相关的uniform数据存入缓冲
+
+2、**Uniform块布局**告诉OpenGL内存的哪一部分对应着着色器中的哪一个uniform变量
+
+- 共享布局
+- std140
+- packed布局
+
+3、**绑定点**，让OpenGL知道哪个Uniform缓冲对应哪个Uniform块
+
+- glGetUniformBlockIndex 获取Uniform块索引
+- glUniformBlockBinding 设置Uniform块的绑定点
+- 创建GL_UNIFORM_BUFFER缓冲对象
+- UNIFORM缓冲对象绑定到Uniform块
+
+
+
+
+
+### 几何着色器
+
+顶点和片段着色器之间有一个**可选**的**几何着色器**！
+
+几何着色器的**输入**是一个图元（如点或三角形）的一组顶点！在顶点发送到下一着色器阶段之前对它们随意变换！
+
+几何着色器最有趣的地方在于，它能够将（这一组）顶点**变换为完全不同的图元**，并且还能**生成比原来更多的顶点**！
+
+
+
+**直接看例子：**
+
+```glsl
+#version 330 core
+layout (points) in;
+layout (line_strip, max_vertices = 2) out;
+
+void main() {    
+    gl_Position = gl_in[0].gl_Position + vec4(-0.1, 0.0, 0.0, 0.0); 
+    EmitVertex();
+
+    gl_Position = gl_in[0].gl_Position + vec4( 0.1, 0.0, 0.0, 0.0);
+    EmitVertex();
+
+    EndPrimitive();
+}
+```
+
+**in关键字**前声明一个布局修饰符，从顶点着色器接收下列任何一个图元值：
+
+- points
+- lines
+- lines_adjacency
+- triangles
+- triangles_adjacency
+
+
+
+**out关键字**指定几何着色器输出的图元类型，如下：
+
+- points
+- line_strip
+- triangle_strip
+
+
+
+EmitVertex()表示添加当前图元的顶点，EndPrimitive（）添加图元
+
+
+
+我们需要某种方式来获取前一着色器阶段的输出，GLSL提供给我们一个内建(Built-in)变量：
+
+内部看起来是这样的：
+
+```glsl
+in gl_Vertex
+{
+    vec4  gl_Position;
+    float gl_PointSize;
+    float gl_ClipDistance[];
+} gl_in[];
+```
+
+
+
+
+
+类似，通过几何着色器，可以实现：**爆破**效果、**法线可视化**等等功能！
+
+
+
+
+
+### 实例化（Instancing）
+
+假设有一个绘制很多模型的场景，大部分的模型包含的是同一组顶点数据，只不过进行的是不同的世界空间变换。
+
+想象一个充满草的场景：每根草都是一个包含几个三角形的小模型。
+
+如果我们需要渲染大量物体时，代码看起来会像这样：
+
+```
+for(unsigned int i = 0; i < amount_of_models_to_draw; i++)
+{
+    DoSomePreparations(); // 绑定VAO，绑定纹理，设置uniform等
+    glDrawArrays(GL_TRIANGLES, 0, amount_of_vertices);
+}
+```
+
+这种多少个物体，就调用多少次DrawCall，在这种情况下往往是很难接受的！
+
+**实例化**这项技术能够让我们使用一个渲染调用来绘制多个物体，来节省每次绘制物体时CPU -> GPU的通信，它只需要一次即可！
+
+如果想使用实例化渲染，只需要将glDrawArrays和glDrawElements的渲染调用分别改为**glDrawArraysInstanced**和**glDrawElementsInstanced**就可以！
+
+这些渲染函数的**实例化**版本需要一个额外的参数，叫做**实例数量**(Instance Count)！
+
+
+
+注意！GLSL在顶点着色器中嵌入了另一个内建变量，**gl_InstanceID**，gl_InstanceID会从0开始，在每个实例被渲染时递增1！
+
+因为每个实例都有唯一的ID，我们可以建立一个数组，将ID与位置值对应起来，将每个实例放置在世界的不同位置。
+
+
+
+
+
+### 实例化数组
+
+虽然可以通过Uniform数组 + gl_InstanceID方式，实现数量较少时的实例化渲染。但是当实例化的数量特别多的时候，就会超过Uniform数组上限！
+
+这种方案就会行不通了！
+
+
+
+此时需要用到**实例化数组方案！**
+
+它被定义为一个**顶点属性**（能够让我们储存更多的数据），仅在顶点着色器**渲染一个新的实例时才会更新**！
+
+这允许我们对逐顶点的数据使用普通的顶点属性，而对逐实例的数据使用实例化数组。
+
+
+
+
+
+
+
+### 抗锯齿
+
+锯齿边缘的现象被称之为走样，抗锯齿（Anti-aliasing，也被称为反走样）的技术能够帮助我们缓解这种现象，从而产生更**平滑**的边缘！
+
+
+
+最开始有一种叫做**超采样抗锯齿(Super Sample Anti-aliasing, SSAA)**的技术，它用比正常分辨率更高的分辨率来渲染场景，当图像输出在帧缓冲中更新时，分辨率会被下采样(Downsample)至正常的分辨率，虽然它确实能够解决走样的问题，但是由于这样比平时要绘制更多的片段，它也会带来很大的性能开销！所以这项技术只拥有了短暂的辉煌。
+
+然而，在这项技术的基础上也诞生了更为现代的技术，叫做多重采样抗锯齿(Multisample Anti-aliasing, MSAA)，它借鉴了SSAA背后的理念，但却以更加高效的方式实现了抗锯齿！
+
+
+
+### 多重采样（MSAA）
+
+![image-20240701163551810](Study.assets/image-20240701163551810.png)
+
+可以看到一个屏幕像素的网格，每个像素的中心包含有一个采样点，它被用来决定这个三角形是否遮盖了某个像素！每一个遮住的像素处都会生成一个片段！
+
+所以，产生如下结果：
+
+![image-20240701163633813](Study.assets/image-20240701163633813.png)
+
+由于屏幕像素总量的限制，有些边缘的像素能够被渲染出来，而有些则不会。结果就是我们使用了不光滑的边缘！
+
+
+
+
+
+多重采样所做的正是将单一的采样点变为多个采样点，不再使用像素中心的单一采样点，取而代之的是以特定图案排列的4个子采样点，用这些子采样点来决定像素的遮盖度。当然，这也意味着颜色缓冲的大小会随着子采样点的增加而增加！
+
+![image-20240701163740889](Study.assets/image-20240701163740889.png)
+
+
+
+所以MSAA会产生如下的效果：
+
+![image-20240701163816303](Study.assets/image-20240701163816303.png)
+
+三角形的不平滑边缘被稍浅的颜色所包围后，从远处观察时就会显得更加平滑了。
+
+
+
+
+
+### OpenGL中的MSAA
+
+1、`glfwWindowHint(GLFW_SAMPLES, 4);`
+
+2、`glEnable(GL_MULTISAMPLE);`
+
+
+
+
+
+## 高级光照
+
+在[光照](https://learnopengl-cn.github.io/02 Lighting/02 Basic Lighting/)小节中，我们简单地介绍了冯氏光照模型，虽然冯氏模型看起来已经很不错了，但是使用它的时候仍然存在一些细节问题！
+
+
+
+### Blinn-Phong光照模型：
+
+冯氏光照不仅对真实光照有很好的近似，而且性能也很高，但是它的镜面反射会在一些情况下出现问题，特别是物体反光度很低时，会导致大片（粗糙的）高光区域！
+
+下面这张图展示了当反光度为1.0时地板会出现的效果：
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 OpenGL中缓冲只是一块儿内存区域的对象，当把缓冲绑定到一个特定缓冲对象的时候，我们就给缓冲赋予了一个特殊的意义！
 

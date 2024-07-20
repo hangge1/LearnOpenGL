@@ -75,6 +75,18 @@
     <None Include="assets\shader\skybox.vs" />
     <None Include="assets\shader\reflectShader.fs" />
     <None Include="assets\shader\reflectShader.vs" />
+    <None Include="assets\shader\testShader.fs" />
+    <None Include="assets\shader\testShader.vs" />
+    <None Include="assets\shader\blueShader.fs" />
+    <None Include="assets\shader\greenShader.fs" />
+    <None Include="assets\shader\redShader.fs" />
+    <None Include="assets\shader\uniformBlockShader.vs" />
+    <None Include="assets\shader\testgeometryShader.fs" />
+    <None Include="assets\shader\testgeometryShader.gs" />
+    <None Include="assets\shader\testgeometryShader.vs" />
+    <None Include="assets\shader\explodeGeometryShader.gs" />
+    <None Include="assets\shader\instanceShader.vs" />
+    <None Include="assets\shader\instanceShader.fs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
